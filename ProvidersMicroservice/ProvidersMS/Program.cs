@@ -1,6 +1,14 @@
 using DotNetEnv;
+using FluentValidation;
 using Microsoft.OpenApi.Models;
+using ProvidersMS.Core.Application.IdGenerator;
+using ProvidersMS.Core.Application.Logger;
 using ProvidersMS.Core.Infrastructure.Data;
+using ProvidersMS.Core.Infrastructure.Logger;
+using ProvidersMS.Core.Infrastructure.UUID;
+using ProvidersMS.src.Cranes.Application.Commands.CreateCrane.Types;
+using ProvidersMS.src.Cranes.Application.Repositories;
+using ProvidersMS.src.Cranes.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,15 +17,16 @@ Env.Load();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSingleton<MongoDbService>();
-//Injectar las interfaces e implementaciones que se usan en los controllers
-//builder.Services.AddScoped<IOrderRepository, MongoOrderRepository>();
-//builder.Services.AddScoped<IdGenerator<string>, GuidGenerator>();
+builder.Services.AddTransient<IValidator<CreateCraneCommand>, CreateCraneCommandValidator>();
+builder.Services.AddScoped<ICraneRepository, MongoCraneRepository>();
+builder.Services.AddScoped<IdGenerator<string>, GuidGenerator>();
+builder.Services.AddScoped<ILoggerContract, Logger>();
 
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "My API",
+        Title = "API ProvidersMicroservice",
         Version = "v1",
         Description = "Endpoints de ProvidersMicroservice",
     });
@@ -31,7 +40,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "API ProvidersMicroservice");
         c.RoutePrefix = string.Empty;
     });
 

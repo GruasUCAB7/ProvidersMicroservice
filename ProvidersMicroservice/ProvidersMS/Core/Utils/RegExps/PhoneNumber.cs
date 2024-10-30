@@ -8,7 +8,7 @@ namespace ProvidersMS.Core.Utils.RegExps
 
         internal static bool IsMatch(string phone)
         {
-            throw new NotImplementedException();
+            return PhoneNumberRegexs.IsMatch(phone);
         }
     }
 }

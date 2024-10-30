@@ -25,7 +25,7 @@ namespace ProvidersMS.Core.Infrastructure.Data
             var mongoClient = new MongoClient(connectionString);
             _database = mongoClient.GetDatabase(databaseName);
         }
-        //Tablas de la base de datos que se usaran
+
         public IMongoCollection<BsonDocument> GetProviderCollection()
         {
             return _database.GetCollection<BsonDocument>("provider");
@@ -36,9 +36,9 @@ namespace ProvidersMS.Core.Infrastructure.Data
             return _database.GetCollection<BsonDocument>("driver");
         }
 
-        public IMongoCollection<BsonDocument> GetVehicleCollection()
+        public IMongoCollection<BsonDocument> GetCraneCollection()
         {
-            return _database.GetCollection<BsonDocument>("vehicle");
+            return _database.GetCollection<BsonDocument>("crane");
         }
     }
 }
