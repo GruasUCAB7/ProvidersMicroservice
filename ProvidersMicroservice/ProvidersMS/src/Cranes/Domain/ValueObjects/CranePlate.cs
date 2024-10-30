@@ -1,8 +1,6 @@
 ﻿using ProvidersMS.Core.Domain.ValueObjects;
 using ProvidersMS.Core.Utils.RegExps;
 using ProvidersMS.src.Cranes.Domain.Exceptions;
-using ProvidersMS.src.Providers.Domain.Exceptions;
-using ProvidersMS.src.Providers.Domain.ValueObjects;
 
 namespace ProvidersMS.src.Cranes.Domain.ValueObjects
 {

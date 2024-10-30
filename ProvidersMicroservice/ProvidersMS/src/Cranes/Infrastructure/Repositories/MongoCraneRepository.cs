@@ -1,8 +1,8 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
-using ProvidersMS.Core.Application.Dtos;
 using ProvidersMS.Core.Infrastructure.Data;
 using ProvidersMS.Core.Utils.Result;
+using ProvidersMS.src.Cranes.Application.Queries.GetAll.Types;
 using ProvidersMS.src.Cranes.Application.Repositories;
 using ProvidersMS.src.Cranes.Domain;
 using ProvidersMS.src.Cranes.Domain.ValueObjects;
@@ -21,15 +21,21 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Repositories
             return crane != null;
         }
 
-        public async Task<List<Crane>> GetAll(PaginationDto data)
+        public async Task<List<Crane>> GetAll(GetAllCranesQuery data)
         {
+            var filterBuilder = Builders<BsonDocument>.Filter;
+            var filter = data.IsActive?.ToLower() switch
+            {
+                "active" => filterBuilder.Eq("isActive", true),
+                "inactive" => filterBuilder.Eq("isActive", false),
+                _ => filterBuilder.Empty
+            };
+
             var craneEntities = await _craneCollection
-                .Find(_ => true)
+                .Find(filter)
                 .Skip(data.PerPage * (data.Page - 1))
                 .Limit(data.PerPage)
                 .ToListAsync();
-
-            Console.WriteLine(craneEntities);
 
             return craneEntities.Select(e => Crane.CreateCrane(
                 new CraneId(e.GetValue("_id").AsString),
@@ -38,7 +44,6 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Repositories
                 new CranePlate(e.GetValue("plate").AsString),
                 Enum.Parse<CraneSizeType>(e.GetValue("craneType").AsString),
                 new CraneYear(e.GetValue("year").AsInt32)
-
             )).ToList();
         }
 

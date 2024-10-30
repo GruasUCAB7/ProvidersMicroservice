@@ -1,15 +1,13 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
-//using ProvidersMS.Core.Application.Dtos;
 using ProvidersMS.Core.Application.IdGenerator;
 using ProvidersMS.Core.Application.Logger;
 using ProvidersMS.src.Cranes.Application.Commands.CreateCrane;
 using ProvidersMS.src.Cranes.Application.Commands.CreateCrane.Types;
-//using ProvidersMS.src.Cranes.Application.Queries.GetAll;
-//using ProvidersMS.src.Cranes.Application.Queries.GetById;
-//using ProvidersMS.src.Cranes.Application.Queries.GetById.Types;
-//using ProvidersMS.src.Cranes.Application.Queries.Types;
+using ProvidersMS.src.Cranes.Application.Queries.GetAll;
+using ProvidersMS.src.Cranes.Application.Queries.GetAll.Types;
+using ProvidersMS.src.Cranes.Application.Queries.Types;
 using ProvidersMS.src.Cranes.Application.Repositories;
 
 namespace ProvidersMS.src.Cranes.Infrastructure.Controllers
@@ -63,24 +61,24 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Controllers
             }
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetAllCranes([FromQuery] PaginationDto data)
-        //{
-        //    try
-        //    {
-        //        var query = new PaginationDto(data.Page, data.PerPage);
-        //        var handler = new GetAllCranesQueryHandler(_craneRepo);
-        //        var result = await handler.Execute(query);
+        [HttpGet]
+        public async Task<IActionResult> GetAllCranes([FromQuery] GetAllCranesQuery data)
+        {
+            try
+            {
+                var query = new GetAllCranesQuery(data.Page, data.PerPage, data.IsActive);
+                var handler = new GetAllCranesQueryHandler(_craneRepo);
+                var result = await handler.Execute(query);
 
-        //        _logger.Log("List of cranes: {CraneIds}", string.Join(", ", result.Unwrap().Select(c => c.Id)));
-        //        return StatusCode(200, result.Unwrap());
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.Exception("Failed to get list of cranes", ex.Message);
-        //        return StatusCode(200, Array.Empty<GetCraneResponse>());
-        //    }
-        //}
+                _logger.Log("List of cranes: {CraneIds}", string.Join(", ", result.Unwrap().Select(c => c.Id)));
+                return StatusCode(200, result.Unwrap());
+            }
+            catch (Exception ex)
+            {
+                _logger.Exception("Failed to get list of cranes", ex.Message);
+                return StatusCode(200, Array.Empty<GetCraneResponse>());
+            }
+        }
 
         //[HttpGet("{id}")]
         //public async Task<IActionResult> GetCraneById(string id)

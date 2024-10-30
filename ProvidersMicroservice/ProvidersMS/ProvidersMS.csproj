@@ -6,22 +6,27 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="src\Cranes\Domain\Entities\**" />
+    <Compile Remove="src\Drivers\**" />
+    <Compile Remove="src\Providers\**" />
+    <Content Remove="src\Cranes\Domain\Entities\**" />
+    <Content Remove="src\Drivers\**" />
+    <Content Remove="src\Providers\**" />
+    <EmbeddedResource Remove="src\Cranes\Domain\Entities\**" />
+    <EmbeddedResource Remove="src\Drivers\**" />
+    <EmbeddedResource Remove="src\Providers\**" />
+    <None Remove="src\Cranes\Domain\Entities\**" />
+    <None Remove="src\Drivers\**" />
+    <None Remove="src\Providers\**" />
+  </ItemGroup>
+
 	<ItemGroup>
 		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
 		<PackageReference Include="DotNetEnv" Version="3.1.1" />
 		<PackageReference Include="MongoDB.Driver" Version="3.0.0" />
 		<PackageReference Include="FluentValidation" Version="11.10.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="src\Cranes\Domain\Entities\" />
-	  <Folder Include="src\Drivers\Application\" />
-	  <Folder Include="src\Drivers\Domain\Entities\" />
-	  <Folder Include="src\Drivers\Infrastructure\" />
-	  <Folder Include="src\Providers\Application\" />
-	  <Folder Include="src\Providers\Domain\Entities\" />
-	  <Folder Include="src\Providers\Infrastructure\" />
 	</ItemGroup>
 
 </Project>
