@@ -24,11 +24,6 @@ namespace ProvidersMS.src.Cranes.Domain
         public int GetYear() => _year.GetValue();
         public bool GetIsActive() => _isActive;
         public DateTime GetCreationDate() => _creationDate;
-        public void SetBrand(string brand) => _brand = new CraneBrand(brand);
-        public void SetModel(string model) => _model = new CraneModel(model);
-        public void SetPlate(string plate) => _plate = new CranePlate(plate);
-        public void SetCraneType(string craneType) => _craneType = Enum.Parse<CraneSizeType>(craneType);
-        public void SetYear(int year) => _year = new CraneYear(year);
         public bool SetIsActive(bool isActive) => _isActive = isActive;
 
 
@@ -51,15 +46,13 @@ namespace ProvidersMS.src.Cranes.Domain
 
         public void OnCraneUpdatedEvent(CraneUpdated context)
         {
-            if (context.IsActive != null)
-            {
-                _isActive = context.IsActive.Value;
-            }
+            _id = new CraneId(context.Id);
+            _isActive = context.IsActive;
         }
 
         public override void ValidateState()
         {
-            if (_id == null || _brand == null || _model == null || _plate == null || _craneType == null || _year == null)
+            if (_id == null || _brand == null || _model == null || _plate == null || _year == null)
             {
                 throw new InvalidCraneException();
             }

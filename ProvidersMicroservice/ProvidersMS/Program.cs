@@ -10,6 +10,7 @@ using ProvidersMS.src.Cranes.Application.Commands.CreateCrane.Types;
 using ProvidersMS.src.Cranes.Application.Commands.UpdateCrane.Types;
 using ProvidersMS.src.Cranes.Application.Repositories;
 using ProvidersMS.src.Cranes.Infrastructure.Repositories;
+using ProvidersMS.src.Cranes.Infrastructure.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 

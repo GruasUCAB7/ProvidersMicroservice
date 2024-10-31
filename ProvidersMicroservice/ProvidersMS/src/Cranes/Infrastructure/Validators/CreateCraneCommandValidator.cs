@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
+using ProvidersMS.src.Cranes.Application.Commands.CreateCrane.Types;
 
-namespace ProvidersMS.src.Cranes.Application.Commands.CreateCrane.Types
+namespace ProvidersMS.src.Cranes.Infrastructure.Validators
 {
     public class CreateCraneCommandValidator : AbstractValidator<CreateCraneCommand>
     {
