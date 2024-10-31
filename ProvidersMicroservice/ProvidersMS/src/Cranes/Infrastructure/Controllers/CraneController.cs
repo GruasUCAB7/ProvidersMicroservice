@@ -7,6 +7,8 @@ using ProvidersMS.src.Cranes.Application.Commands.CreateCrane;
 using ProvidersMS.src.Cranes.Application.Commands.CreateCrane.Types;
 using ProvidersMS.src.Cranes.Application.Queries.GetAll;
 using ProvidersMS.src.Cranes.Application.Queries.GetAll.Types;
+using ProvidersMS.src.Cranes.Application.Queries.GetById;
+using ProvidersMS.src.Cranes.Application.Queries.GetById.Types;
 using ProvidersMS.src.Cranes.Application.Queries.Types;
 using ProvidersMS.src.Cranes.Application.Repositories;
 
@@ -80,31 +82,33 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Controllers
             }
         }
 
-        //[HttpGet("{id}")]
-        //public async Task<IActionResult> GetCraneById(string id)
-        //{
-        //    try
-        //    {
-        //        var query = new GetCraneByIdQuery(id);
-        //        var handler = new GetCraneByIdQueryHandler(_craneRepo);
-        //        var result = await handler.Execute(query);
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCraneById(string id)
+        {
+            try
+            {
+                var query = new GetCraneByIdQuery(id);
+                var handler = new GetCraneByIdQueryHandler(_craneRepo);
+                var result = await handler.Execute(query);
 
-        //        var crane = result.Unwrap();
-        //        if (crane == null || crane.Id != id)
-        //        {
-        //            _logger.Error("Crane not found: {CraneId}", id);
-        //            return NotFound();
-        //        }
+                var crane = result.Unwrap();
 
-        //        _logger.Log("Crane found: {CraneId}", id);
-        //        return StatusCode(200, crane);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.Exception("Failed to get crane by id", ex.Message);
-        //        return StatusCode(500, "Crane not found");
-        //    }
-        //}
+                Console.WriteLine(crane);
+                if (crane == null || crane.Id != id)
+                {
+                    _logger.Error("Crane not found: {CraneId}", id);
+                    return NotFound();
+                }
+
+                _logger.Log("Crane found: {CraneId}", id);
+                return StatusCode(200, crane);
+            }
+            catch (Exception ex)
+            {
+                _logger.Exception("Failed to get crane by id", ex.Message);
+                return StatusCode(500, "Crane not found");
+            }
+        }
 
         //[HttpPut("{id}")]
         //public async Task<IActionResult> UpdateCrane([FromBody] UpdateCraneCommand data, string id)
