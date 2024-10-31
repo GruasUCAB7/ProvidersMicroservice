@@ -37,14 +37,22 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Repositories
                 .Limit(data.PerPage)
                 .ToListAsync();
 
-            return craneEntities.Select(e => Crane.CreateCrane(
-                new CraneId(e.GetValue("_id").AsString),
-                new CraneBrand(e.GetValue("brand").AsString),
-                new CraneModel(e.GetValue("model").AsString),
-                new CranePlate(e.GetValue("plate").AsString),
-                Enum.Parse<CraneSizeType>(e.GetValue("craneType").AsString),
-                new CraneYear(e.GetValue("year").AsInt32)
-            )).ToList();
+            var cranes = craneEntities.Select(e =>
+            {
+                var crane = Crane.CreateCrane(
+                    new CraneId(e.GetValue("_id").AsString),
+                    new CraneBrand(e.GetValue("brand").AsString),
+                    new CraneModel(e.GetValue("model").AsString),
+                    new CranePlate(e.GetValue("plate").AsString),
+                    Enum.Parse<CraneSizeType>(e.GetValue("craneType").AsString),
+                    new CraneYear(e.GetValue("year").AsInt32)
+                );
+
+                crane.SetIsActive(e.GetValue("isActive").AsBoolean);
+                return crane;
+            }).ToList();
+
+            return cranes;
         }
 
         public async Task<Core.Utils.Optional.Optional<Crane>> GetById(string id)
@@ -56,7 +64,7 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Repositories
             {
                 return Core.Utils.Optional.Optional<Crane>.Empty();
             }
-
+            
             var crane = Crane.CreateCrane(
                 new CraneId(craneDocument.GetValue("_id").AsString),
                 new CraneBrand(craneDocument.GetValue("brand").AsString),
@@ -65,6 +73,8 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Repositories
                 Enum.Parse<CraneSizeType>(craneDocument.GetValue("craneType").AsString),
                 new CraneYear(craneDocument.GetValue("year").AsInt32)
             );
+
+            crane.SetIsActive(craneDocument.GetValue("isActive").AsBoolean);
 
             return Core.Utils.Optional.Optional<Crane>.Of(crane);
         }
@@ -106,6 +116,22 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Repositories
                 new CraneYear(mongoCrane.Year)
             );
             return Result<Crane>.Success(savedCrane);
+        }
+
+        public async Task<Result<Crane>> Update(Crane crane)
+        {
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", crane.GetId());
+            var update = Builders<BsonDocument>.Update
+                .Set("isActive", crane.GetIsActive());
+
+            var updateResult = await _craneCollection.UpdateOneAsync(filter, update);
+
+            if (updateResult.ModifiedCount == 0)
+            {
+                return Result<Crane>.Failure(new Exception("Failed to update crane"));
+            }
+
+            return Result<Crane>.Success(crane);
         }
     }
 }
