@@ -7,6 +7,7 @@ using ProvidersMS.Core.Infrastructure.Data;
 using ProvidersMS.Core.Infrastructure.Logger;
 using ProvidersMS.Core.Infrastructure.UUID;
 using ProvidersMS.src.Cranes.Application.Commands.CreateCrane.Types;
+using ProvidersMS.src.Cranes.Application.Commands.UpdateCrane.Types;
 using ProvidersMS.src.Cranes.Application.Repositories;
 using ProvidersMS.src.Cranes.Infrastructure.Repositories;
 
@@ -18,6 +19,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSingleton<MongoDbService>();
 builder.Services.AddTransient<IValidator<CreateCraneCommand>, CreateCraneCommandValidator>();
+builder.Services.AddTransient<IValidator<UpdateCraneCommand>, UpdateCraneCommandValidator>();
 builder.Services.AddScoped<ICraneRepository, MongoCraneRepository>();
 builder.Services.AddScoped<IdGenerator<string>, GuidGenerator>();
 builder.Services.AddScoped<ILoggerContract, Logger>();

@@ -27,8 +27,6 @@ namespace ProvidersMS.src.Cranes.Application.Commands.CreateCrane
 
             var id = _idGenerator.Generate();
             var craneSizeType = (CraneSizeType)Enum.Parse(typeof(CraneSizeType), data.CraneType);
-            var isActive = true;
-            var creationDate = DateTime.UtcNow;
             var crane = Crane.CreateCrane(
                 new CraneId(id),
                 new CraneBrand(data.Brand),
