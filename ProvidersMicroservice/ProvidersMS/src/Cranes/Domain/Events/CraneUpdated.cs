@@ -5,12 +5,12 @@ namespace ProvidersMS.src.Cranes.Domain.Events
 {
     public class CraneUpdatedEvent(string dispatcherId, string name, CraneUpdated context) : DomainEvent<object>(dispatcherId, name, context) { }
     
-    public class CraneUpdated(string id, bool? isActive)
+    public class CraneUpdated(string id, bool isActive)
     {
         public readonly string Id = id;
-        public readonly bool? IsActive = isActive;
+        public readonly bool IsActive = isActive;
 
-        static public CraneUpdatedEvent CreateEvent(CraneId craneId, bool? isActive)
+        static public CraneUpdatedEvent CreateEvent(CraneId craneId, bool isActive)
         {
             return new CraneUpdatedEvent(
                 craneId.GetValue(),
