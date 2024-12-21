@@ -2,8 +2,8 @@
 {
     public enum CraneSizeType
     {
-        Light,
-        Medium,
-        Heavy
+        Ligera,
+        Mediana,
+        Pesada
     }
 }

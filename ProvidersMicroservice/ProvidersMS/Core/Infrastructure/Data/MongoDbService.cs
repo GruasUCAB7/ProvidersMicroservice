@@ -40,5 +40,10 @@ namespace ProvidersMS.Core.Infrastructure.Data
         {
             return _database.GetCollection<BsonDocument>("crane");
         }
+
+        public IMongoCollection<BsonDocument> GetImageCollection()
+        {
+            return _database.GetCollection<BsonDocument>("image");
+        }
     }
 }

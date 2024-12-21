@@ -14,7 +14,6 @@ namespace ProvidersMS.src.Cranes.Domain
         private CraneSizeType _craneType;
         private CraneYear _year;
         private bool _isActive = true;
-        private DateTime _creationDate = DateTime.UtcNow;
 
         public string GetId() => _id.GetValue();
         public string GetBrand() => _brand.GetValue();
@@ -23,7 +22,6 @@ namespace ProvidersMS.src.Cranes.Domain
         public string GetCraneType() => _craneType.GetValue();
         public int GetYear() => _year.GetValue();
         public bool GetIsActive() => _isActive;
-        public DateTime GetCreationDate() => _creationDate;
         public bool SetIsActive(bool isActive) => _isActive = isActive;
 
 

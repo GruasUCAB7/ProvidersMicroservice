@@ -6,7 +6,7 @@ namespace ProvidersMS.src.Cranes.Domain.ValueObjects
     {
         public static string GetValue(this CraneSizeType craneSizeType)
         {
-            if (craneSizeType == CraneSizeType.Light || craneSizeType == CraneSizeType.Medium || craneSizeType == CraneSizeType.Heavy)
+            if (craneSizeType == CraneSizeType.Ligera || craneSizeType == CraneSizeType.Mediana || craneSizeType == CraneSizeType.Pesada)
             {
                 return craneSizeType.ToString();
             }

@@ -27,11 +27,10 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Models
         [BsonElement("isActive")]
         public required bool IsActive { get; set; }
 
-        [BsonElement("creationDate")]
-        public required DateTime CreationDate { get; set; }
+        [BsonElement("createdDate")]
+        public required DateTime CreatedDate { get; set; }
 
-
-
-
+        [BsonElement("updatedDate")]
+        public required DateTime UpdatedDate { get; set; }
     }
 }
