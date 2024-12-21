@@ -16,7 +16,7 @@ using ProvidersMS.src.Cranes.Application.Repositories;
 
 namespace ProvidersMS.src.Cranes.Infrastructure.Controllers
 {
-    [Route("api/crane")]
+    [Route("crane")]
     [ApiController]
     public class CraneController(
         ICraneRepository craneRepo,
@@ -97,12 +97,11 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Controllers
 
                 var crane = result.Unwrap();
 
-                Console.WriteLine(crane);
-                if (crane == null || crane.Id != id)
-                {
-                    _logger.Error("Crane not found: {CraneId}", id);
-                    return NotFound();
-                }
+                //if (crane == null || crane.Id != id)
+                //{
+                //    _logger.Error("Crane not found: {CraneId}", id);
+                //    return NotFound();
+                //}
 
                 _logger.Log("Crane found: {CraneId}", id);
                 return StatusCode(200, crane);

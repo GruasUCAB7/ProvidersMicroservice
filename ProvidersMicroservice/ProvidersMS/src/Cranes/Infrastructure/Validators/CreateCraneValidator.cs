@@ -3,9 +3,9 @@ using ProvidersMS.src.Cranes.Application.Commands.CreateCrane.Types;
 
 namespace ProvidersMS.src.Cranes.Infrastructure.Validators
 {
-    public class CreateCraneCommandValidator : AbstractValidator<CreateCraneCommand>
+    public class CreateCraneValidator : AbstractValidator<CreateCraneCommand>
     {
-        public CreateCraneCommandValidator()
+        public CreateCraneValidator()
         {
             RuleFor(x => x.Brand)
             .NotEmpty().WithMessage("Brand is required.")

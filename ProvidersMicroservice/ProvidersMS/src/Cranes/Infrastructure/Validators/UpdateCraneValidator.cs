@@ -3,9 +3,9 @@ using ProvidersMS.src.Cranes.Application.Commands.UpdateCrane.Types;
 
 namespace ProvidersMS.src.Cranes.Infrastructure.Validators
 {
-    public class UpdateCraneCommandValidator : AbstractValidator<UpdateCraneCommand>
+    public class UpdateCraneValidator : AbstractValidator<UpdateCraneCommand>
     {
-        public UpdateCraneCommandValidator()
+        public UpdateCraneValidator()
         {
             RuleFor(x => x.IsActive)
                 .NotNull().WithMessage("IsActive must be true or false.");

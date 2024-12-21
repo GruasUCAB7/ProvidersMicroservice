@@ -90,7 +90,8 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Repositories
                 CraneType = crane.GetCraneType().ToString(),
                 Year = crane.GetYear(),
                 IsActive = crane.GetIsActive(),
-                CreationDate = crane.GetCreationDate()
+                CreatedDate = DateTime.UtcNow,
+                UpdatedDate = DateTime.UtcNow
             };
 
             var bsonDocument = new BsonDocument
@@ -102,7 +103,8 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Repositories
                 {"craneType", mongoCrane.CraneType},
                 {"year", mongoCrane.Year},
                 {"isActive", mongoCrane.IsActive},
-                {"dateCreate", mongoCrane.CreationDate}
+                {"createdDate", mongoCrane.CreatedDate},
+                {"updatedDate", mongoCrane.UpdatedDate}
             };
 
             await _craneCollection.InsertOneAsync(bsonDocument);
@@ -132,6 +134,17 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Repositories
             }
 
             return Result<Crane>.Success(crane);
+        }
+
+        public async Task<bool> IsActiveCrane(string id)
+        {
+            var filter = Builders<BsonDocument>.Filter.And(
+                Builders<BsonDocument>.Filter.Eq("_id", id),
+                Builders<BsonDocument>.Filter.Eq("isActive", true)
+            );
+
+            var crane = await _craneCollection.Find(filter).FirstOrDefaultAsync();
+            return crane != null;
         }
     }
 }

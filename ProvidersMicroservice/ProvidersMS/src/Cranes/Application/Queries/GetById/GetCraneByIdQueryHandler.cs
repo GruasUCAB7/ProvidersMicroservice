@@ -19,7 +19,6 @@ namespace ProvidersMS.src.Cranes.Application.Queries.GetById
             }
 
             var crane = craneOptional.Unwrap();
-            Console.WriteLine(crane);
             var response = new GetCraneResponse(
                 crane.GetId(),
                 crane.GetBrand(),

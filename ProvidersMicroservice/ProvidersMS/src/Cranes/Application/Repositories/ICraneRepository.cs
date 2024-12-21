@@ -12,5 +12,6 @@ namespace ProvidersMS.src.Cranes.Application.Repositories
         Task<Optional<Crane>> GetById(string id);
         Task<Result<Crane>> Save(Crane crane);
         Task<Result<Crane>> Update(Crane crane);
+        Task<bool> IsActiveCrane(string craneId);
     }
 }

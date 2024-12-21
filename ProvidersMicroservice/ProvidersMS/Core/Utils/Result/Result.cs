@@ -1,4 +1,6 @@
-﻿namespace ProvidersMS.Core.Utils.Result
+﻿using ProvidersMS.src.Drivers.Application.Commands.UpdateImagesDocuments.Types;
+
+namespace ProvidersMS.Core.Utils.Result
 {
     public class Result<T>
     {
