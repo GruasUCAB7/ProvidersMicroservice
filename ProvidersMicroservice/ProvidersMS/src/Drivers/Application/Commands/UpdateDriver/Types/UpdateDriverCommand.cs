@@ -3,6 +3,7 @@
     public record UpdateDriverCommand
     (
         bool? IsActiveLicensed,
-        string? CraneAssigned
+        string? CraneAssigned,
+        bool? IsAvailable
     );
 }

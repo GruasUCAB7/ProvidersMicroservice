@@ -72,7 +72,7 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Controllers
         {
             try
             {
-                var query = new GetAllCranesQuery(data.Page, data.PerPage, data.IsActive);
+                var query = new GetAllCranesQuery(data.PerPage, data.Page, data.IsActive);
                 var handler = new GetAllCranesQueryHandler(_craneRepo);
                 var result = await handler.Execute(query);
 
@@ -96,12 +96,6 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Controllers
                 var result = await handler.Execute(query);
 
                 var crane = result.Unwrap();
-
-                //if (crane == null || crane.Id != id)
-                //{
-                //    _logger.Error("Crane not found: {CraneId}", id);
-                //    return NotFound();
-                //}
 
                 _logger.Log("Crane found: {CraneId}", id);
                 return StatusCode(200, crane);

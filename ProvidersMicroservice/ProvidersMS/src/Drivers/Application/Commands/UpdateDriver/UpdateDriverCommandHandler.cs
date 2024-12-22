@@ -1,6 +1,5 @@
 ﻿using ProvidersMS.Core.Application.Services;
 using ProvidersMS.Core.Utils.Result;
-using ProvidersMS.src.Cranes.Application.Commands.UpdateCrane.Types;
 using ProvidersMS.src.Cranes.Domain.ValueObjects;
 using ProvidersMS.src.Drivers.Application.Commands.UpdateDriver.Types;
 using ProvidersMS.src.Drivers.Application.Exceptions;
@@ -33,10 +32,15 @@ namespace ProvidersMS.src.Drivers.Application.Commands.UpdateDriver
                 driver.SetCraneAssigned(craneId);
             }
 
+            if (request.data.IsAvailable.HasValue)
+            {
+                driver.SetIsAvailable(request.data.IsAvailable.Value);
+            }
+
             var updateResult = await _driverRepository.Update(driver);
             if (updateResult.IsFailure)
             {
-                return Result<UpdateDriverResponse>.Failure(new Exception("The driver could not be updated correctly"));
+                return Result<UpdateDriverResponse>.Failure(new DriverUpdateFailedException());
             }
 
             var response = new UpdateDriverResponse(
@@ -44,7 +48,8 @@ namespace ProvidersMS.src.Drivers.Application.Commands.UpdateDriver
                 driver.GetDNI(),
                 driver.GetIsActiveLicensed(),
                 driver.GetImagesDocuments(),
-                driver.GetCraneAssigned()
+                driver.GetCraneAssigned(),
+                driver.GetIsAvailable()
             );
 
             return Result<UpdateDriverResponse>.Success(response);

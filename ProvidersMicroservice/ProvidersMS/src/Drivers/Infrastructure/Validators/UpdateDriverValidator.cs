@@ -1,5 +1,4 @@
-﻿using CloudinaryDotNet.Core;
-using FluentValidation;
+﻿using FluentValidation;
 using ProvidersMS.src.Drivers.Application.Commands.UpdateDriver.Types;
 
 namespace ProvidersMS.src.Drivers.Infrastructure.Validators
@@ -15,6 +14,10 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Validators
             RuleFor(x => x.CraneAssigned)
                 .NotNull().WithMessage("CraneAssigned must not be null.")
                 .When(x => !string.IsNullOrEmpty(x.CraneAssigned));
+
+            RuleFor(x => x.IsAvailable)
+                .NotNull().WithMessage("IsAvailable must be true or false.")
+                .When(x => x.IsAvailable.HasValue);
 
         }
     }

@@ -41,6 +41,7 @@ namespace ProvidersMS.src.Drivers.Application.Commands.CreateDriver
             {
                 throw new CraneNotAvailableException();
             }
+            
 
             var id = _idGenerator.Generate();
             var driver = Driver.CreateDriver(

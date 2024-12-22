@@ -19,6 +19,11 @@ using ProvidersMS.src.Drivers.Application.Repositories;
 using ProvidersMS.src.Drivers.Infrastructure.Dtos;
 using ProvidersMS.src.Drivers.Infrastructure.Repositories;
 using ProvidersMS.src.Drivers.Infrastructure.Validators;
+using ProvidersMS.src.Providers.Application.Commands.CreateProvider.Types;
+using ProvidersMS.src.Providers.Application.Commands.UpdateProvider.Types;
+using ProvidersMS.src.Providers.Application.Repositories;
+using ProvidersMS.src.Providers.Infrastructure.Repositories;
+using ProvidersMS.src.Providers.Infrastructure.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,8 +38,11 @@ builder.Services.AddTransient<IValidator<CreateCraneCommand>, CreateCraneValidat
 builder.Services.AddTransient<IValidator<UpdateCraneCommand>, UpdateCraneValidator>();
 builder.Services.AddTransient<IValidator<CreateDriverWithImagesCommand>, CreateDriverValidator>();
 builder.Services.AddTransient<IValidator<UpdateDriverCommand>, UpdateDriverValidator>();
+builder.Services.AddTransient<IValidator<CreateProviderCommand>, CreateProviderValidator>();
+builder.Services.AddTransient<IValidator<UpdateProviderCommand>, UpdateProviderValidator>();
 builder.Services.AddScoped<ICraneRepository, MongoCraneRepository>();
 builder.Services.AddScoped<IDriverRepository, MongoDriverRepository>();
+builder.Services.AddScoped<IProviderRepository, MongoProviderRepository>();
 builder.Services.AddScoped<IImageDocumentRepository, MongoImageDocumentRepository>();
 builder.Services.AddScoped<IdGenerator<string>, GuidGenerator>();
 builder.Services.AddScoped<ILoggerContract, Logger>();

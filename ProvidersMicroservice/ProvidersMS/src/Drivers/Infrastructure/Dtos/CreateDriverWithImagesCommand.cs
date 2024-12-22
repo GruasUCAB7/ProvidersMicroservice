@@ -3,7 +3,7 @@
     public record CreateDriverWithImagesCommand(
         string DNI,
         bool IsActiveLicensed,
-        string CraneAssigned,
+        string? CraneAssigned,
         IFormFile LicenseImage,
         IFormFile DNIImage,
         IFormFile RoadMedicalCertificateImage,
