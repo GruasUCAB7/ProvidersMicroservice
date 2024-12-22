@@ -28,7 +28,7 @@ namespace ProvidersMS.src.Cranes.Application.Commands.UpdateCrane
             var updateResult = await _craneRepository.Update(crane);
             if (updateResult.IsFailure)
             {
-                return Result<UpdateCraneResponse>.Failure(new Exception("The crane could not be updated correctly"));
+                return Result<UpdateCraneResponse>.Failure(new CraneUpdateFailedException());
             }
 
             var response = new UpdateCraneResponse(

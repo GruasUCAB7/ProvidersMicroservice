@@ -16,7 +16,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Validators
             .NotEmpty().WithMessage("IsActiveLicensed is required.");
 
             RuleFor(x => x.CraneAssigned)
-            .NotEmpty().WithMessage("Crane id is required.");
+            .NotEmpty().WithMessage("Crane assigned is required.");
         }
     }
 }

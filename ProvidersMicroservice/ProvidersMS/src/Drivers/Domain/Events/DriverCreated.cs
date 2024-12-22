@@ -15,7 +15,7 @@ namespace ProvidersMS.src.Drivers.Domain.Events
         public readonly List<string> ImagesDocuments = imagesDocuments;
         public readonly string CraneAssigned = craneAssigned;
 
-        static public DriverCreatedEvent CreateEvent(DriverId Id, DriverDNI DNI, DriverIsActiveLicensed IsActiveLicensed, List<string> ImagesDocuments, CraneId CraneAssigned)
+        static public DriverCreatedEvent CreateEvent(DriverId Id, DriverDNI DNI, DriverIsActiveLicensed IsActiveLicensed, List<string> ImagesDocuments, CraneId craneAssigned)
         {
             return new DriverCreatedEvent(
                 Id.GetValue(),
@@ -25,7 +25,7 @@ namespace ProvidersMS.src.Drivers.Domain.Events
                     DNI.GetValue(),
                     IsActiveLicensed.GetValue(),
                     ImagesDocuments,
-                    CraneAssigned.GetValue()
+                    craneAssigned.GetValue()
                 )
             );
         }

@@ -157,6 +157,11 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Repositories
                 updateDefinitions.Add(updateDefinitionBuilder.Set("craneAssigned", driver.GetCraneAssigned()));
             }
 
+            if (driver.GetIsAvailable() != null)
+            {
+                updateDefinitions.Add(updateDefinitionBuilder.Set("isAvailable", driver.GetIsAvailable()));
+            }
+
             var update = updateDefinitionBuilder.Combine(updateDefinitions);
             var updateResult = await _driverCollection.UpdateOneAsync(filter, update);
 

@@ -113,7 +113,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
         {
             try
             {
-                var query = new GetAllDriversQuery(data.Page, data.PerPage, data.IsActiveLicensed);
+                var query = new GetAllDriversQuery(data.PerPage, data.Page, data.IsActiveLicensed);
                 var handler = new GetAllDriversQueryHandler(_driverRepo);
                 var result = await handler.Execute(query);
 
@@ -159,7 +159,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
         {
             try
             {
-                var command = new UpdateDriverCommand(data.IsActiveLicensed, data.CraneAssigned);
+                var command = new UpdateDriverCommand(data.IsActiveLicensed, data.CraneAssigned, data.IsAvailable);
 
                 var validate = _validatorUpdate.Validate(command);
                 if (!validate.IsValid)
