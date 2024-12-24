@@ -23,7 +23,7 @@ using ProvidersMS.src.Drivers.Application.Queries.GetAll;
 
 namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
 {
-    [Route("driver")]
+    [Route("provider/driver")]
     [ApiController]
     public class DriverController(
         IDriverRepository driverRepo,

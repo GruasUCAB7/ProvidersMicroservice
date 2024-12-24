@@ -16,7 +16,7 @@ using ProvidersMS.src.Cranes.Application.Repositories;
 
 namespace ProvidersMS.src.Cranes.Infrastructure.Controllers
 {
-    [Route("crane")]
+    [Route("provider/crane")]
     [ApiController]
     public class CraneController(
         ICraneRepository craneRepo,
