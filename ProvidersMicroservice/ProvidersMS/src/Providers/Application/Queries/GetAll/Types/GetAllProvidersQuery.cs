@@ -3,6 +3,7 @@
     public record GetAllProvidersQuery
     (
         int PerPage,
-        int Page
+        int Page,
+        string? IsActive
     );
 }

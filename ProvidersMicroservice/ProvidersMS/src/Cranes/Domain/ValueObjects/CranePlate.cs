@@ -26,10 +26,5 @@ namespace ProvidersMS.src.Cranes.Domain.ValueObjects
         {
             return Plate == other.Plate;
         }
-
-        public override string ToString()
-        {
-            return Plate;
-        }
     }
 }

@@ -19,7 +19,7 @@ using ProvidersMS.src.Providers.Application.Repositories;
 
 namespace ProvidersMS.src.Providers.Infrastructure.Controllers
 {
-    [Route("provider")]
+    [Route("provider/provider")]
     [ApiController]
     public class ProviderController(
         IProviderRepository providerRepo,
@@ -79,7 +79,7 @@ namespace ProvidersMS.src.Providers.Infrastructure.Controllers
         {
             try
             {
-                var query = new GetAllProvidersQuery(data.PerPage, data.Page);
+                var query = new GetAllProvidersQuery(data.PerPage, data.Page, data.IsActive);
                 var handler = new GetAllProvidersQueryHandler(_providerRepo);
                 var result = await handler.Execute(query);
 
@@ -119,7 +119,7 @@ namespace ProvidersMS.src.Providers.Infrastructure.Controllers
         {
             try
             {
-                var command = new UpdateProviderCommand(data.FleetOfCranes, data.Drivers);
+                var command = new UpdateProviderCommand(data.FleetOfCranes, data.Drivers, data.IsActive);
 
                 var validate = _validatorUpdate.Validate(command);
                 if (!validate.IsValid)

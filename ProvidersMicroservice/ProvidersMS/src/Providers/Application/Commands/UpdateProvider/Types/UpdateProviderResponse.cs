@@ -6,6 +6,7 @@
         string Rif,
         string ProviderType,
         List<string> FleetOfCranes,
-        List<string> Drivers
+        List<string> Drivers,
+        bool IsAtive
     );
 }

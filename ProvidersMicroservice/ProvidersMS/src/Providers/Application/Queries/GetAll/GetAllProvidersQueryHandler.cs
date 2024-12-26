@@ -23,7 +23,8 @@ namespace ProvidersMS.src.Providers.Application.Queries.GetAll
                 provider.GetRif(),
                 provider.GetProviderType(),
                 provider.GetFleetOfCranes(),
-                provider.GetDrivers()
+                provider.GetDrivers(),
+                provider.GetIsActive()
                 )
             ).ToArray();
 

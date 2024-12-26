@@ -27,9 +27,15 @@ namespace ProvidersMS.src.Providers.Infrastructure.Repositories
         public async Task<List<Provider>> GetAll(GetAllProvidersQuery data)
         {
             var filterBuilder = Builders<BsonDocument>.Filter;
+            var filter = data.IsActive?.ToLower() switch
+            {
+                "active" => filterBuilder.Eq("isActive", true),
+                "inactive" => filterBuilder.Eq("isActive", false),
+                _ => filterBuilder.Empty
+            };
 
             var providerEntities = await _providerCollection
-                .Find(filterBuilder.Empty)
+                .Find(filter)
                 .Skip(data.PerPage * (data.Page - 1))
                 .Limit(data.PerPage)
                 .ToListAsync();
@@ -50,6 +56,7 @@ namespace ProvidersMS.src.Providers.Infrastructure.Repositories
                     drivers
                 );
 
+                provider.SetIsActive(p.GetValue("isActive").AsBoolean);
                 return provider;
             }).ToList();
 
@@ -79,6 +86,8 @@ namespace ProvidersMS.src.Providers.Infrastructure.Repositories
                 fleetOfCranes,
                 drivers
             );
+            
+            provider.SetIsActive(providerDocument.GetValue("isActive").AsBoolean);
 
             return Core.Utils.Optional.Optional<Provider>.Of(provider);
         }
@@ -92,6 +101,7 @@ namespace ProvidersMS.src.Providers.Infrastructure.Repositories
                 ProviderType = provider.GetProviderType(),
                 FleetOfCranes = provider.GetFleetOfCranes(),
                 Drivers = provider.GetDrivers(),
+                IsActive = provider.GetIsActive(),
                 CreatedDate = DateTime.UtcNow,
                 UpdatedDate = DateTime.UtcNow
             };
@@ -103,6 +113,7 @@ namespace ProvidersMS.src.Providers.Infrastructure.Repositories
                 {"providerType", mongoProvider.ProviderType},
                 {"fleetOfCranes", new BsonArray(mongoProvider.FleetOfCranes)},
                 {"drivers", new BsonArray(mongoProvider.Drivers)},
+                {"isActive", mongoProvider.IsActive},
                 {"createdDate", mongoProvider.CreatedDate},
                 {"updatedDate", mongoProvider.UpdatedDate}
             };
@@ -131,6 +142,11 @@ namespace ProvidersMS.src.Providers.Infrastructure.Repositories
 
             var updateDefinitionBuilder = Builders<BsonDocument>.Update;
             var updateDefinitions = new List<UpdateDefinition<BsonDocument>>();
+
+            if (provider.GetIsActive() != null)
+            {
+                updateDefinitions.Add(updateDefinitionBuilder.Set("isActive", provider.GetIsActive()));
+            } 
 
             if (provider.GetFleetOfCranes() != null)
             {

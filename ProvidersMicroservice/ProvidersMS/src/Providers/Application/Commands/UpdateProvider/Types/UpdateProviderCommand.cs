@@ -3,6 +3,7 @@
     public record UpdateProviderCommand
     (
         List<string>? FleetOfCranes,
-        List<string>? Drivers
+        List<string>? Drivers,
+        bool? IsActive
     );
 }

@@ -21,6 +21,9 @@ namespace ProvidersMS.src.Providers.Infrastructure.Models
         [BsonElement("drivers")]
         public required List<string> Drivers { get; set; }
 
+        [BsonElement("isActive")]
+        public required bool IsActive { get; set; }
+
         [BsonElement("createdDate")]
         public required DateTime CreatedDate { get; set; }
 

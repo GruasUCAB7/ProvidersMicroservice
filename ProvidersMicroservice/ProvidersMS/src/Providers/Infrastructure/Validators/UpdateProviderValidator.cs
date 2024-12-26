@@ -1,21 +1,12 @@
 ﻿using FluentValidation;
-using ProvidersMS.src.Providers.Application.Commands.CreateProvider.Types;
-using ProvidersMS.src.Providers.Domain.ValueObjects;
+using ProvidersMS.src.Providers.Application.Commands.UpdateProvider.Types;
 
 namespace ProvidersMS.src.Providers.Infrastructure.Validators
 {
-    public class CreateProviderValidator : AbstractValidator<CreateProviderCommand>
+    public class UpdateProviderValidator : AbstractValidator<UpdateProviderCommand>
     {
-        public CreateProviderValidator()
+        public UpdateProviderValidator()
         {
-            RuleFor(x => x.Rif)
-            .NotEmpty().WithMessage("Rif is required.")
-            .Matches(@"^[JGVEP][0-9]{9}$").WithMessage("Rif must be in the format X123456789");
-
-            RuleFor(x => x.ProviderType)
-            .NotEmpty().WithMessage("ProviderType is required.")
-            .IsEnumName(typeof(ProviderType), caseSensitive: false).WithMessage("ProviderType is not valid.");
-
             RuleFor(x => x.FleetOfCranes)
             .NotNull().WithMessage("FleetOfCranes is required.")
             .When(x => x.FleetOfCranes != null);
@@ -23,6 +14,10 @@ namespace ProvidersMS.src.Providers.Infrastructure.Validators
             RuleFor(x => x.Drivers)
             .NotNull().WithMessage("Drivers is required.")
             .When(x => x.Drivers != null);
+
+            RuleFor(x => x.IsActive)
+                .NotNull().WithMessage("IsActive must be true or false.")
+                .When(x => x.IsActive.HasValue);
         }
     }
 }

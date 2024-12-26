@@ -15,13 +15,16 @@ namespace ProvidersMS.src.Providers.Domain
         private ProviderType _type;
         private List<CraneId> _fleetOfCranes;
         private List<DriverId> _drivers;
+        private bool _isActive = true;
 
         public string GetId() => _id.GetValue();
         public string GetRif() => _rif.GetValue();
         public string GetProviderType() => _type.GetValue();
         public List<string> GetFleetOfCranes() => _fleetOfCranes.Select(c => c.GetValue()).ToList();
         public List<string> GetDrivers() => _drivers.Select(d => d.GetValue()).ToList();
-        
+        public bool GetIsActive() => _isActive;
+        public bool SetIsActive(bool isActive) => _isActive = isActive;
+
         public void AddCranes(List<CraneId> craneIds)
         {
             foreach (var craneId in craneIds)

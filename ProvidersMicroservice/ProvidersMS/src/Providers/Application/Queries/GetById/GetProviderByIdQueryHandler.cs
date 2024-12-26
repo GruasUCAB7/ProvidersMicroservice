@@ -24,7 +24,8 @@ namespace ProvidersMS.src.Providers.Application.Queries.GetById
                 provider.GetRif(),
                 provider.GetProviderType(),
                 provider.GetFleetOfCranes(),
-                provider.GetDrivers()
+                provider.GetDrivers(),
+                provider.GetIsActive()
             );
 
             return Result<GetProviderResponse>.Success(response);

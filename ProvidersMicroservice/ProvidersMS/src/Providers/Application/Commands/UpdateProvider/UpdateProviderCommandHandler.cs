@@ -84,6 +84,11 @@ namespace ProvidersMS.src.Providers.Application.Commands.UpdateProvider
                 provider.AddDrivers(driverIds);
             }
 
+            if (request.data.IsActive.HasValue)
+            {
+                provider.SetIsActive(request.data.IsActive.Value);
+            }
+
             var updateResult = await _providerRepository.Update(provider);
             if (updateResult.IsFailure)
             {
@@ -95,7 +100,8 @@ namespace ProvidersMS.src.Providers.Application.Commands.UpdateProvider
                 provider.GetRif(),
                 provider.GetProviderType(),
                 provider.GetFleetOfCranes(),
-                provider.GetDrivers()
+                provider.GetDrivers(),
+                provider.GetIsActive()
             );
 
             return Result<UpdateProviderResponse>.Success(response);

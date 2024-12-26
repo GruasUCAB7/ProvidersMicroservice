@@ -25,10 +25,5 @@ namespace ProvidersMS.src.Cranes.Domain.ValueObjects
         {
             return Year == other.Year;
         }
-
-        public override string ToString()
-        {
-            return Year.ToString();
-        }
     }
 }
