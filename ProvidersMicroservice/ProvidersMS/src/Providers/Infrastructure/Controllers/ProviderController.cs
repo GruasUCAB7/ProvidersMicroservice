@@ -13,6 +13,8 @@ using ProvidersMS.src.Providers.Application.Queries.GetAll;
 using ProvidersMS.src.Providers.Application.Queries.GetAll.Types;
 using ProvidersMS.src.Providers.Application.Queries.GetById;
 using ProvidersMS.src.Providers.Application.Queries.GetById.Types;
+using ProvidersMS.src.Providers.Application.Queries.GetDriversAvailables;
+using ProvidersMS.src.Providers.Application.Queries.GetDriversAvailables.Types;
 using ProvidersMS.src.Providers.Application.Queries.Types;
 using ProvidersMS.src.Providers.Application.Repositories;
 
@@ -90,6 +92,25 @@ namespace ProvidersMS.src.Providers.Infrastructure.Controllers
             {
                 _logger.Exception("Failed to get list of providers", ex.Message);
                 return StatusCode(200, Array.Empty<GetProviderResponse>());
+            }
+        }
+
+        [HttpGet("availables")]
+        public async Task<IActionResult> GetAvailableDrivers([FromQuery] GetAvailableDriversQuery data)
+        {
+            try
+            {
+                var query = new GetAvailableDriversQuery(data.PerPage, data.Page, data.IsAvailable);
+                var handler = new GetAvailableDriversQueryHandler(_providerRepo);
+                var result = await handler.Execute(query);
+
+                _logger.Log("List of available drivers:", string.Join(", ", result.Unwrap().Select(c => c.CraneAssigned)));
+                return StatusCode(200, result.Unwrap());
+            }
+            catch (Exception ex)
+            {
+                _logger.Exception("Failed to get available drivers", ex.Message);
+                return StatusCode(200, Array.Empty<GetAvailableDriversResponse>());
             }
         }
 

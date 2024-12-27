@@ -26,8 +26,8 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Repositories
             var filterBuilder = Builders<BsonDocument>.Filter;
             var filter = data.IsActive?.ToLower() switch
             {
-                "active" => filterBuilder.Eq("isActive", true),
-                "inactive" => filterBuilder.Eq("isActive", false),
+                "activo" => filterBuilder.Eq("isActive", true),
+                "inactivo" => filterBuilder.Eq("isActive", false),
                 _ => filterBuilder.Empty
             };
 

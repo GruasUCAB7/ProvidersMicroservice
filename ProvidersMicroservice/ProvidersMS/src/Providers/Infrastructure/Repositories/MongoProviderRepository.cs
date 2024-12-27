@@ -5,7 +5,9 @@ using ProvidersMS.Core.Utils.Result;
 using ProvidersMS.src.Cranes.Domain.ValueObjects;
 using ProvidersMS.src.Drivers.Domain.ValueObjects;
 using ProvidersMS.src.Providers.Application.Exceptions;
+using ProvidersMS.src.Providers.Application.Models;
 using ProvidersMS.src.Providers.Application.Queries.GetAll.Types;
+using ProvidersMS.src.Providers.Application.Queries.GetDriversAvailables.Types;
 using ProvidersMS.src.Providers.Application.Repositories;
 using ProvidersMS.src.Providers.Domain;
 using ProvidersMS.src.Providers.Domain.ValueObjects;
@@ -16,6 +18,7 @@ namespace ProvidersMS.src.Providers.Infrastructure.Repositories
     public class MongoProviderRepository(MongoDbService mongoDbService) : IProviderRepository
     {
         private readonly IMongoCollection<BsonDocument> _providerCollection = mongoDbService.GetProviderCollection();
+        private readonly IMongoCollection<BsonDocument> _driverCollection = mongoDbService.GetDriverCollection();
 
         public async Task<bool> ExistByRif(string rif)
         {
@@ -184,6 +187,66 @@ namespace ProvidersMS.src.Providers.Infrastructure.Repositories
             var filter = Builders<BsonDocument>.Filter.Eq("drivers", driverId);
             var provider = await _providerCollection.Find(filter).FirstOrDefaultAsync();
             return provider != null;
+        }
+
+        public async Task<List<Driver>> GetAvailableDrivers(GetAvailableDriversQuery data)
+        {
+            var filterBuilder = Builders<BsonDocument>.Filter;
+            var filter = data.IsAvailable?.ToLower() switch
+            {
+                "disponible" => filterBuilder.Eq("isAvailable", true),
+                "no disponible" => filterBuilder.Eq("isAvailable", false),
+                _ => filterBuilder.Empty
+            };
+
+            var driverEntities = await _driverCollection
+                .Find(filter)
+                .Skip(data.PerPage * (data.Page - 1))
+                .Limit(data.PerPage)
+                .ToListAsync();
+
+            var drivers = new List<Driver>();
+            foreach (var d in driverEntities)
+            {
+                try
+                {
+                    var driver = new Driver(
+                        d.GetValue("_id").AsString, 
+                        d.GetValue("craneAssigned").AsString
+                    );
+                    drivers.Add(driver);
+                }
+                catch (FormatException ex)
+                {
+                    Console.WriteLine("Error parsing driver document: {0}", ex.Message);
+                }
+            }
+
+            var internalProviderDrivers = new List<Driver>();
+            var externalProviderDrivers = new List<Driver>();
+
+            foreach (var driver in drivers)
+            {
+                var providerFilter = Builders<BsonDocument>.Filter.Eq("fleetOfCranes", driver.CraneAssigned);
+                var providerDocument = await _providerCollection.Find(providerFilter).FirstOrDefaultAsync();
+
+                if (providerDocument != null)
+                {
+                    var providerType = Enum.Parse<ProviderType>(providerDocument.GetValue("providerType").AsString);
+                    if (providerType == ProviderType.Interno)
+                    {
+                        internalProviderDrivers.Add(driver);
+                    }
+                    else
+                    {
+                        externalProviderDrivers.Add(driver);
+                    }
+                }
+            }
+
+            var sortedDrivers = internalProviderDrivers.Concat(externalProviderDrivers).ToList();
+
+            return sortedDrivers;
         }
     }
 }

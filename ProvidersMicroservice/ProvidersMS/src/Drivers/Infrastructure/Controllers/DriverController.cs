@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using ProvidersMS.Core.Application.IdGenerator;
 using ProvidersMS.Core.Application.Logger;
 using ProvidersMS.Core.Application.Storage.Images;
-using ProvidersMS.src.Cranes.Application.Queries.GetAll.Types;
 using ProvidersMS.src.Drivers.Application.Commands.CreateDriver;
 using ProvidersMS.src.Drivers.Application.Commands.CreateDriver.Types;
 using ProvidersMS.src.Drivers.Application.Commands.UpdateImagesDocuments;
@@ -20,6 +19,7 @@ using ProvidersMS.src.Drivers.Application.Commands.UpdateDriver;
 using ProvidersMS.src.Cranes.Application.Repositories;
 using ProvidersMS.src.Cranes.Application.Exceptions;
 using ProvidersMS.src.Drivers.Application.Queries.GetAll;
+using ProvidersMS.src.Drivers.Application.Queries.GetAll.Types;
 
 namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
 {
@@ -113,7 +113,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
         {
             try
             {
-                var query = new GetAllDriversQuery(data.PerPage, data.Page, data.IsActiveLicensed);
+                var query = new GetAllDriversQuery(data.PerPage, data.Page, data.IsActiveLicensed, data.IsAvailable);
                 var handler = new GetAllDriversQueryHandler(_driverRepo);
                 var result = await handler.Execute(query);
 

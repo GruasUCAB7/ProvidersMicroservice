@@ -1,9 +1,10 @@
-﻿namespace ProvidersMS.src.Cranes.Application.Queries.GetAll.Types
+﻿namespace ProvidersMS.src.Drivers.Application.Queries.GetAll.Types
 {
     public record GetAllDriversQuery
     (
         int PerPage,
         int Page,
-        string? IsActiveLicensed
+        string? IsActiveLicensed,
+        string? IsAvailable
     );
 }
