@@ -1,6 +1,8 @@
 ﻿using ProvidersMS.Core.Utils.Optional;
 using ProvidersMS.Core.Utils.Result;
+using ProvidersMS.src.Providers.Application.Models;
 using ProvidersMS.src.Providers.Application.Queries.GetAll.Types;
+using ProvidersMS.src.Providers.Application.Queries.GetDriversAvailables.Types;
 using ProvidersMS.src.Providers.Domain;
 
 namespace ProvidersMS.src.Providers.Application.Repositories
@@ -14,5 +16,6 @@ namespace ProvidersMS.src.Providers.Application.Repositories
         Task<Result<Provider>> Update(Provider provider);
         Task<bool> IsCraneAssociatedWithAnotherProvider(string craneId);
         Task<bool> IsDriverAssociatedWithAnotherProvider(string driverId);
+        Task<List<Driver>> GetAvailableDrivers(GetAvailableDriversQuery data);
     }
 }

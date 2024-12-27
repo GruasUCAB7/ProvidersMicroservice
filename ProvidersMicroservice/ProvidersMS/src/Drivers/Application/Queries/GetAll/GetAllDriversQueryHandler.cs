@@ -1,7 +1,7 @@
 ﻿using ProvidersMS.Core.Application.Services;
 using ProvidersMS.Core.Utils.Result;
-using ProvidersMS.src.Cranes.Application.Queries.GetAll.Types;
 using ProvidersMS.src.Drivers.Application.Exceptions;
+using ProvidersMS.src.Drivers.Application.Queries.GetAll.Types;
 using ProvidersMS.src.Drivers.Application.Repositories;
 using ProvidersMS.src.Drivers.Application.Types;
 

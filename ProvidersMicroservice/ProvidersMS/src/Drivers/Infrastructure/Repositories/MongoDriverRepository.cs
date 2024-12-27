@@ -2,9 +2,9 @@
 using MongoDB.Driver;
 using ProvidersMS.Core.Infrastructure.Data;
 using ProvidersMS.Core.Utils.Result;
-using ProvidersMS.src.Cranes.Application.Queries.GetAll.Types;
 using ProvidersMS.src.Cranes.Domain.ValueObjects;
 using ProvidersMS.src.Drivers.Application.Exceptions;
+using ProvidersMS.src.Drivers.Application.Queries.GetAll.Types;
 using ProvidersMS.src.Drivers.Application.Repositories;
 using ProvidersMS.src.Drivers.Domain;
 using ProvidersMS.src.Drivers.Domain.ValueObjects;
@@ -21,16 +21,31 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Repositories
             var driver = await _driverCollection.Find(filter).FirstOrDefaultAsync();
             return driver != null;
         }
-        
+
         public async Task<List<Driver>> GetAll(GetAllDriversQuery data)
         {
             var filterBuilder = Builders<BsonDocument>.Filter;
-            var filter = data.IsActiveLicensed?.ToLower() switch
+            var filter = filterBuilder.Empty;
+
+            if (!string.IsNullOrEmpty(data.IsActiveLicensed))
             {
-                "active" => filterBuilder.Eq("isActiveLicensed", true),
-                "inactive" => filterBuilder.Eq("isActiveLicensed", false),
-                _ => filterBuilder.Empty
-            };
+                filter &= data.IsActiveLicensed.ToLower() switch
+                {
+                    "activo" => filterBuilder.Eq("isActiveLicensed", true),
+                    "inactivo" => filterBuilder.Eq("isActiveLicensed", false),
+                    _ => filter
+                };
+            }
+
+            if (!string.IsNullOrEmpty(data.IsAvailable))
+            {
+                filter &= data.IsAvailable.ToLower() switch
+                {
+                    "disponible" => filterBuilder.Eq("isAvailable", true),
+                    "no disponible" => filterBuilder.Eq("isAvailable", false),
+                    _ => filter
+                };
+            }
 
             var driverEntities = await _driverCollection
                 .Find(filter)
@@ -54,8 +69,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Repositories
             }).ToList();
 
             return drivers;
-        }   
-
+        }
 
         public async Task<Core.Utils.Optional.Optional<Driver>> GetById(string id)
         {

@@ -1,6 +1,6 @@
 ﻿using ProvidersMS.Core.Utils.Optional;
 using ProvidersMS.Core.Utils.Result;
-using ProvidersMS.src.Cranes.Application.Queries.GetAll.Types;
+using ProvidersMS.src.Drivers.Application.Queries.GetAll.Types;
 using ProvidersMS.src.Drivers.Domain;
 
 namespace ProvidersMS.src.Drivers.Application.Repositories
