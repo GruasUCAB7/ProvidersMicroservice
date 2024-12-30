@@ -7,6 +7,12 @@
         bool IsActiveLicensed,
         List<string> ImagesDocuments,
         string CraneAssigned,
-        bool IsAvailable
+        bool IsAvailable,
+        CoordinatesDto DriverLocation
+    );
+
+    public record CoordinatesDto(
+        double Latitude,
+        double Longitude
     );
 }

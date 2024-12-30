@@ -1,4 +1,5 @@
-﻿using ProvidersMS.Core.Application.IdGenerator;
+﻿using ProvidersMS.Core.Application.GoogleApiService;
+using ProvidersMS.Core.Application.IdGenerator;
 using ProvidersMS.Core.Application.Services;
 using ProvidersMS.Core.Utils.Result;
 using ProvidersMS.src.Cranes.Application.Exceptions;
@@ -13,20 +14,22 @@ using ProvidersMS.src.Drivers.Domain.ValueObjects;
 namespace ProvidersMS.src.Drivers.Application.Commands.CreateDriver
 {
     public class CreateDriverCommandHandler(
-        IDriverRepository driverRepository,
-        ICraneRepository craneRepository,
-        IdGenerator<string> idGenerator
+         IDriverRepository driverRepository,
+         ICraneRepository craneRepository,
+         IdGenerator<string> idGenerator,
+         IGoogleApiService googleApiService
     ) : IService<CreateDriverCommand, CreateDriverResponse>
     {
         private readonly IDriverRepository _driverRepository = driverRepository;
         private readonly ICraneRepository _craneRepository = craneRepository;
         private readonly IdGenerator<string> _idGenerator = idGenerator;
+        private readonly IGoogleApiService _googleApiService = googleApiService;
 
         public async Task<Result<CreateDriverResponse>> Execute(CreateDriverCommand data)
         {
             var isDriverExist = await _driverRepository.ExistByDNI(data.DNI);
-            if (isDriverExist) 
-            { 
+            if (isDriverExist)
+            {
                 return Result<CreateDriverResponse>.Failure(new DriverAlreadyExistException(data.DNI));
             }
 
@@ -41,7 +44,12 @@ namespace ProvidersMS.src.Drivers.Application.Commands.CreateDriver
             {
                 throw new CraneNotAvailableException();
             }
-            
+
+            var driverLocationResult = await _googleApiService.GetCoordinatesFromAddress(data.DriverLocation);
+            if (driverLocationResult == null)
+            {
+                return Result<CreateDriverResponse>.Failure(new CoordinatesNotFoundException("Driver location not found."));
+            }
 
             var id = _idGenerator.Generate();
             var driver = Driver.CreateDriver(
@@ -49,7 +57,8 @@ namespace ProvidersMS.src.Drivers.Application.Commands.CreateDriver
                 new DriverDNI(data.DNI),
                 new DriverIsActiveLicensed(data.IsActiveLicensed),
                 new List<string>(),
-                new CraneId(data.CraneAssigned)
+                new CraneId(data.CraneAssigned),
+                new DriverLocation(driverLocationResult.Latitude, driverLocationResult.Longitude)
             );
             await _driverRepository.Save(driver);
 

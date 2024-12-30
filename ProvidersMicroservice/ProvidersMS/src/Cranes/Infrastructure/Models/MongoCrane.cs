@@ -18,12 +18,12 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Models
         [BsonElement("plate")]
         public required string Plate { get; set; }
         
-        [BsonElement("craneType")]
-        public required string CraneType { get; set; }
+        [BsonElement("craneSize")]
+        public required string CraneSize { get; set; }
         
         [BsonElement("year")]
         public required int Year { get; set; }
-        
+
         [BsonElement("isActive")]
         public required bool IsActive { get; set; }
 

@@ -24,10 +24,22 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Models
         [BsonElement("isAvailable")]
         public required bool IsAvailable { get; set; }
 
+        [BsonElement("driverLocation")]
+        public required MongoCoordinates DriverLocation { get; set; }
+
         [BsonElement("createdDate")]
         public required DateTime CreatedDate { get; set; }
 
         [BsonElement("updatedDate")]
         public required DateTime UpdatedDate { get; set; }
+    }
+
+    public class MongoCoordinates
+    {
+        [BsonElement("latitude")]
+        public required double Latitude { get; set; }
+
+        [BsonElement("longitude")]
+        public required double Longitude { get; set; }
     }
 }

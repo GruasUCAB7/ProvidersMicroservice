@@ -1,15 +1,19 @@
-﻿using ProvidersMS.Core.Application.Services;
+﻿using ProvidersMS.Core.Application.GoogleApiService;
+using ProvidersMS.Core.Application.Services;
 using ProvidersMS.Core.Utils.Result;
+using ProvidersMS.src.Cranes.Application.Exceptions;
 using ProvidersMS.src.Cranes.Domain.ValueObjects;
 using ProvidersMS.src.Drivers.Application.Commands.UpdateDriver.Types;
 using ProvidersMS.src.Drivers.Application.Exceptions;
 using ProvidersMS.src.Drivers.Application.Repositories;
+using ProvidersMS.src.Drivers.Application.Types;
 
 namespace ProvidersMS.src.Drivers.Application.Commands.UpdateDriver
 {
-    public class UpdateDriverCommandHandler(IDriverRepository driverRepository) : IService<(string id, UpdateDriverCommand data), UpdateDriverResponse>
+    public class UpdateDriverCommandHandler(IDriverRepository driverRepository, IGoogleApiService googleApiService) : IService<(string id, UpdateDriverCommand data), UpdateDriverResponse>
     {
         private readonly IDriverRepository _driverRepository = driverRepository;
+        private readonly IGoogleApiService _googleApiService = googleApiService;
 
         public async Task<Result<UpdateDriverResponse>> Execute((string id, UpdateDriverCommand data) request)
         {
@@ -37,6 +41,15 @@ namespace ProvidersMS.src.Drivers.Application.Commands.UpdateDriver
                 driver.SetIsAvailable(request.data.IsAvailable.Value);
             }
 
+            if (!string.IsNullOrEmpty(request.data.DriverLocation))
+            {
+                var location = await _googleApiService.GetCoordinatesFromAddress(request.data.DriverLocation);
+                if (location == null)
+                {
+                    return Result<UpdateDriverResponse>.Failure(new CoordinatesNotFoundException("Driver location not found."));
+                }
+            }
+
             var updateResult = await _driverRepository.Update(driver);
             if (updateResult.IsFailure)
             {
@@ -49,7 +62,8 @@ namespace ProvidersMS.src.Drivers.Application.Commands.UpdateDriver
                 driver.GetIsActiveLicensed(),
                 driver.GetImagesDocuments(),
                 driver.GetCraneAssigned(),
-                driver.GetIsAvailable()
+                driver.GetIsAvailable(),
+                new CoordinatesDto(driver.GetDriverLocationLatitude(), driver.GetDriverLocationLongitude())
             );
 
             return Result<UpdateDriverResponse>.Success(response);

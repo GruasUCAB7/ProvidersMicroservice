@@ -19,6 +19,9 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Validators
                 .NotNull().WithMessage("IsAvailable must be true or false.")
                 .When(x => x.IsAvailable.HasValue);
 
+            RuleFor(x => x.DriverLocation)
+               .NotNull().WithMessage("Driver location must not be null.")
+               .When(x => !string.IsNullOrEmpty(x.DriverLocation));
         }
     }
 }

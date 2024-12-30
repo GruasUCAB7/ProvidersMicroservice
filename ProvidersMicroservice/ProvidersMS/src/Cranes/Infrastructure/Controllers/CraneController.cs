@@ -11,8 +11,8 @@ using ProvidersMS.src.Cranes.Application.Queries.GetAll;
 using ProvidersMS.src.Cranes.Application.Queries.GetAll.Types;
 using ProvidersMS.src.Cranes.Application.Queries.GetById;
 using ProvidersMS.src.Cranes.Application.Queries.GetById.Types;
-using ProvidersMS.src.Cranes.Application.Queries.Types;
 using ProvidersMS.src.Cranes.Application.Repositories;
+using ProvidersMS.src.Cranes.Application.Types;
 
 namespace ProvidersMS.src.Cranes.Infrastructure.Controllers
 {
@@ -36,7 +36,7 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Controllers
         {
             try
             {
-                var command = new CreateCraneCommand(data.Brand, data.Model, data.Plate, data.CraneType, data.Year);
+                var command = new CreateCraneCommand(data.Brand, data.Model, data.Plate, data.CraneSize, data.Year);
 
                 var validate = _validatorCreate.Validate(command);
                 if (!validate.IsValid)

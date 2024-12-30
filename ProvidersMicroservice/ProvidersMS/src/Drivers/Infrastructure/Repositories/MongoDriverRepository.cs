@@ -60,7 +60,11 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Repositories
                     new DriverDNI(d.GetValue("dni").AsString),
                     new DriverIsActiveLicensed(d.GetValue("isActiveLicensed").AsBoolean),
                     d.GetValue("imageDocuments").AsBsonArray.Select(i => i.AsString).ToList(),
-                    new CraneId(d.GetValue("craneAssigned").AsString)
+                    new CraneId(d.GetValue("craneAssigned").AsString),
+                    new DriverLocation(
+                        d.GetValue("driverLocation").AsBsonDocument.GetValue("latitude").AsDouble,
+                        d.GetValue("driverLocation").AsBsonDocument.GetValue("longitude").AsDouble
+                    )
                 );
 
                 driver.SetIsAvailable(d.GetValue("isAvailable").AsBoolean);
@@ -85,7 +89,11 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Repositories
                 new DriverDNI(driverDocument.GetValue("dni").AsString),
                 new DriverIsActiveLicensed(driverDocument.GetValue("isActiveLicensed").AsBoolean),
                 driverDocument.GetValue("imageDocuments").AsBsonArray.Select(i => i.AsString).ToList(),
-                new CraneId(driverDocument.GetValue("craneAssigned").AsString)
+                new CraneId(driverDocument.GetValue("craneAssigned").AsString),
+                new DriverLocation(
+                        driverDocument.GetValue("driverLocation").AsBsonDocument.GetValue("latitude").AsDouble,
+                        driverDocument.GetValue("driverLocation").AsBsonDocument.GetValue("longitude").AsDouble
+                    )
             );
 
             driver.SetIsAvailable(driverDocument.GetValue("isAvailable").AsBoolean);
@@ -102,6 +110,11 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Repositories
                 ImageDocuments = driver.GetImagesDocuments(),
                 CraneAssigned = driver.GetCraneAssigned(),
                 IsAvailable = driver.GetIsAvailable(),
+                DriverLocation = new MongoCoordinates
+                {
+                    Latitude = driver.GetDriverLocationLatitude(),
+                    Longitude = driver.GetDriverLocationLongitude()
+                },
                 CreatedDate = DateTime.UtcNow,
                 UpdatedDate = DateTime.UtcNow
             };
@@ -114,6 +127,12 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Repositories
                 {"imageDocuments", new BsonArray(mongoDriver.ImageDocuments)},
                 {"craneAssigned", mongoDriver.CraneAssigned},
                 {"isAvailable", mongoDriver.IsAvailable},
+                {"driverLocation", new BsonDocument
+                    {
+                        {"latitude", mongoDriver.DriverLocation.Latitude},
+                        {"longitude", mongoDriver.DriverLocation.Longitude}
+                    }
+                },
                 {"createdDate", mongoDriver.CreatedDate},
                 {"updatedDate", mongoDriver.UpdatedDate}
             };
@@ -125,7 +144,8 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Repositories
                 new DriverDNI(mongoDriver.DNI),
                 new DriverIsActiveLicensed(mongoDriver.IsActiveLicensed),
                 new List<string>(),
-                new CraneId(mongoDriver.CraneAssigned)
+                new CraneId(mongoDriver.CraneAssigned),
+                new DriverLocation(mongoDriver.DriverLocation.Latitude, mongoDriver.DriverLocation.Longitude)
             );
             return Result<Driver>.Success(savedDriver);
         }
@@ -176,6 +196,18 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Repositories
                 updateDefinitions.Add(updateDefinitionBuilder.Set("isAvailable", driver.GetIsAvailable()));
             }
 
+            if (driver.GetDriverLocationLatitude() != 0 || driver.GetDriverLocationLongitude() != 0)
+            {
+                var driverLocation = new BsonDocument
+                {
+                    { "latitude", driver.GetDriverLocationLatitude() },
+                    { "longitude", driver.GetDriverLocationLongitude() }
+                };
+                updateDefinitions.Add(updateDefinitionBuilder.Set("driverLocation", driverLocation));
+            }
+
+            updateDefinitions.Add(updateDefinitionBuilder.Set("updatedDate", DateTime.UtcNow));
+
             var update = updateDefinitionBuilder.Combine(updateDefinitions);
             var updateResult = await _driverCollection.UpdateOneAsync(filter, update);
 
@@ -185,6 +217,24 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Repositories
             }
 
             return Result<Driver>.Success(driver);
+        }
+
+        public async Task ValidateUpdateTimeDriver()
+        {
+            var drivers = await _driverCollection.Find(Builders<BsonDocument>.Filter.Empty).ToListAsync();
+
+            foreach (var driverDocument in drivers)
+            {
+                var updatedDate = driverDocument.GetValue("updatedDate").ToUniversalTime();
+                var timeDifference = DateTime.UtcNow - updatedDate;
+
+                if (timeDifference.TotalMinutes > 10)
+                {
+                    var filter = Builders<BsonDocument>.Filter.Eq("_id", driverDocument.GetValue("_id").AsString);
+                    var update = Builders<BsonDocument>.Update.Set("isAvailable", false);
+                    await _driverCollection.UpdateOneAsync(filter, update);
+                }
+            }
         }
     }
 }

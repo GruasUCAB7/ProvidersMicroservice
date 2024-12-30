@@ -44,7 +44,7 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Repositories
                     new CraneBrand(e.GetValue("brand").AsString),
                     new CraneModel(e.GetValue("model").AsString),
                     new CranePlate(e.GetValue("plate").AsString),
-                    Enum.Parse<CraneSizeType>(e.GetValue("craneType").AsString),
+                    new CraneSize(e.GetValue("craneSize").AsString),
                     new CraneYear(e.GetValue("year").AsInt32)
                 );
 
@@ -70,7 +70,7 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Repositories
                 new CraneBrand(craneDocument.GetValue("brand").AsString),
                 new CraneModel(craneDocument.GetValue("model").AsString),
                 new CranePlate(craneDocument.GetValue("plate").AsString),
-                Enum.Parse<CraneSizeType>(craneDocument.GetValue("craneType").AsString),
+                new CraneSize(craneDocument.GetValue("craneSize").AsString),
                 new CraneYear(craneDocument.GetValue("year").AsInt32)
             );
 
@@ -87,7 +87,7 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Repositories
                 Brand = crane.GetBrand(),
                 Model = crane.GetModel(),
                 Plate = crane.GetPlate(),
-                CraneType = crane.GetCraneType().ToString(),
+                CraneSize = crane.GetCraneSize().ToString(),
                 Year = crane.GetYear(),
                 IsActive = crane.GetIsActive(),
                 CreatedDate = DateTime.UtcNow,
@@ -100,7 +100,7 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Repositories
                 {"brand", mongoCrane.Brand},
                 {"model", mongoCrane.Model},
                 {"plate", mongoCrane.Plate},
-                {"craneType", mongoCrane.CraneType},
+                {"craneSize", mongoCrane.CraneSize},
                 {"year", mongoCrane.Year},
                 {"isActive", mongoCrane.IsActive},
                 {"createdDate", mongoCrane.CreatedDate},
@@ -114,7 +114,7 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Repositories
                 new CraneBrand(mongoCrane.Brand),
                 new CraneModel(mongoCrane.Model),
                 new CranePlate(mongoCrane.Plate),
-                Enum.Parse<CraneSizeType>(mongoCrane.CraneType),
+                new CraneSize(mongoCrane.CraneSize),
                 new CraneYear(mongoCrane.Year)
             );
             return Result<Crane>.Success(savedCrane);
@@ -123,9 +123,17 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Repositories
         public async Task<Result<Crane>> Update(Crane crane)
         {
             var filter = Builders<BsonDocument>.Filter.Eq("_id", crane.GetId());
-            var update = Builders<BsonDocument>.Update
-                .Set("isActive", crane.GetIsActive());
+            var updateDefinitionBuilder = Builders<BsonDocument>.Update;
+            var updateDefinitions = new List<UpdateDefinition<BsonDocument>>();
 
+            if (crane.GetIsActive() != null)
+            {
+                updateDefinitions.Add(updateDefinitionBuilder.Set("isActive", crane.GetIsActive()));
+            }
+
+            updateDefinitions.Add(updateDefinitionBuilder.Set("updatedDate", DateTime.UtcNow));
+
+            var update = updateDefinitionBuilder.Combine(updateDefinitions);
             var updateResult = await _craneCollection.UpdateOneAsync(filter, update);
 
             if (updateResult.ModifiedCount == 0)

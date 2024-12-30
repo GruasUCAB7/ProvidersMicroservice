@@ -8,8 +8,8 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Validators
         public UpdateCraneValidator()
         {
             RuleFor(x => x.IsActive)
-                .NotNull().WithMessage("IsActive must be true or false.");
-
+                .NotNull().WithMessage("IsActive must be true or false.")
+                .When(x => x.IsActive.HasValue);
         }
     }
 }

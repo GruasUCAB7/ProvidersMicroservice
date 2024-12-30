@@ -21,15 +21,13 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Repositories
             var mongoImage = new MongoImage
             {
                 Id = imageDocument.GetId(),
-                Src = imageDocument.GetUrl(),
-                CreatedDate = DateTime.UtcNow
+                Src = imageDocument.GetUrl()
             };
 
             var bsonDocument = new BsonDocument
                 {
                     { "_id", imageDocument.GetId() },
-                    { "src", imageDocument.GetUrl() },
-                    { "createdDate", mongoImage.CreatedDate}
+                    { "src", imageDocument.GetUrl() }
                 };
 
             await _imageCollection.InsertOneAsync(bsonDocument);

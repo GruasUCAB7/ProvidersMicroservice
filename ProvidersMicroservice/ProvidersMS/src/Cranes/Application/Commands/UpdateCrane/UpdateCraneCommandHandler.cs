@@ -36,7 +36,7 @@ namespace ProvidersMS.src.Cranes.Application.Commands.UpdateCrane
                 crane.GetBrand(),
                 crane.GetModel(),
                 crane.GetPlate(),
-                crane.GetCraneType(),
+                crane.GetCraneSize(),
                 crane.GetYear(),
                 crane.GetIsActive()
             );
