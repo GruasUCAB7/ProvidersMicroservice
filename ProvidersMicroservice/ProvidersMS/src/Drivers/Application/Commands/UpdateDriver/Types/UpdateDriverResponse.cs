@@ -1,4 +1,6 @@
-﻿namespace ProvidersMS.src.Drivers.Application.Commands.UpdateDriver.Types
+﻿using ProvidersMS.src.Drivers.Application.Types;
+
+namespace ProvidersMS.src.Drivers.Application.Commands.UpdateDriver.Types
 {
     public record UpdateDriverResponse
     (
@@ -7,6 +9,7 @@
         bool IsActiveLicensed,
         List<string> ImagesDocuments,
         string CraneAssigned,
-        bool IsAvailable
+        bool IsAvailable,
+        CoordinatesDto DriverLocation
     );
 }

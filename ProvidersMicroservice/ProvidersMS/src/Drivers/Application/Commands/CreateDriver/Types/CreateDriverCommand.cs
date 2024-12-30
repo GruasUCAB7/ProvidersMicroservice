@@ -4,6 +4,7 @@
     (
         string DNI,
         bool IsActiveLicensed,
-        string CraneAssigned
+        string CraneAssigned,
+        string DriverLocation
     );
 }

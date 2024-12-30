@@ -1,10 +1,12 @@
 using DotNetEnv;
 using FluentValidation;
 using Microsoft.OpenApi.Models;
+using ProvidersMS.Core.Application.GoogleApiService;
 using ProvidersMS.Core.Application.IdGenerator;
 using ProvidersMS.Core.Application.Logger;
 using ProvidersMS.Core.Application.Storage.Images;
 using ProvidersMS.Core.Infrastructure.Data;
+using ProvidersMS.Core.Infrastructure.GoogleMaps;
 using ProvidersMS.Core.Infrastructure.Logger;
 using ProvidersMS.Core.Infrastructure.Storage;
 using ProvidersMS.Core.Infrastructure.Swagger;
@@ -24,6 +26,7 @@ using ProvidersMS.src.Providers.Application.Commands.UpdateProvider.Types;
 using ProvidersMS.src.Providers.Application.Repositories;
 using ProvidersMS.src.Providers.Infrastructure.Repositories;
 using ProvidersMS.src.Providers.Infrastructure.Validators;
+using RestSharp;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +49,8 @@ builder.Services.AddScoped<IProviderRepository, MongoProviderRepository>();
 builder.Services.AddScoped<IImageDocumentRepository, MongoImageDocumentRepository>();
 builder.Services.AddScoped<IdGenerator<string>, GuidGenerator>();
 builder.Services.AddScoped<ILoggerContract, Logger>();
+builder.Services.AddScoped<IGoogleApiService, GoogleApiService>();
+builder.Services.AddScoped<IRestClient, RestClient>();
 
 builder.Services.AddSwaggerGen(c =>
 {

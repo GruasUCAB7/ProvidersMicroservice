@@ -20,8 +20,8 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Validators
             RuleFor(x => x.Plate)
             .NotEmpty().WithMessage("Plate is required.");
 
-            RuleFor(x => x.CraneType)
-            .NotEmpty().WithMessage("Crane type is required.");
+            RuleFor(x => x.CraneSize)
+            .NotEmpty().WithMessage("Crane size is required.");
 
             RuleFor(x => x.Year)
             .NotEmpty().WithMessage("Year of de crane is required.");

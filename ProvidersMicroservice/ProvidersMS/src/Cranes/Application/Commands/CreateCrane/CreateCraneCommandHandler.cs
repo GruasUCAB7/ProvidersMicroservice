@@ -26,13 +26,12 @@ namespace ProvidersMS.src.Cranes.Application.Commands.CreateCrane
             }
 
             var id = _idGenerator.Generate();
-            var craneSizeType = (CraneSizeType)Enum.Parse(typeof(CraneSizeType), data.CraneType);
             var crane = Crane.CreateCrane(
                 new CraneId(id),
                 new CraneBrand(data.Brand),
                 new CraneModel(data.Model),
                 new CranePlate(data.Plate),
-                craneSizeType,
+                new CraneSize(data.CraneSize),
                 new CraneYear(data.Year)
             );
             await _craneRepository.Save(crane);

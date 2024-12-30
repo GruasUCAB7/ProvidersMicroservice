@@ -4,6 +4,7 @@
     (
         bool? IsActiveLicensed,
         string? CraneAssigned,
-        bool? IsAvailable
+        bool? IsAvailable,
+        string? DriverLocation
     );
 }

@@ -1,9 +1,9 @@
 ﻿using ProvidersMS.Core.Application.Services;
 using ProvidersMS.Core.Utils.Result;
 using ProvidersMS.src.Cranes.Application.Queries.GetAll.Types;
-using ProvidersMS.src.Cranes.Application.Queries.Types;
 using ProvidersMS.src.Cranes.Application.Repositories;
 using ProvidersMS.src.Cranes.Application.Exceptions;
+using ProvidersMS.src.Cranes.Application.Types;
 
 namespace ProvidersMS.src.Cranes.Application.Queries.GetAll
 {
@@ -23,7 +23,7 @@ namespace ProvidersMS.src.Cranes.Application.Queries.GetAll
                 crane.GetBrand(),
                 crane.GetModel(),
                 crane.GetPlate(),
-                crane.GetCraneType(),
+                crane.GetCraneSize(),
                 crane.GetYear(),
                 crane.GetIsActive()
                 )

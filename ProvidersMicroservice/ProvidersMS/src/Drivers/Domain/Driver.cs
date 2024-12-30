@@ -14,6 +14,7 @@ namespace ProvidersMS.src.Drivers.Domain
         private List<string> _imagesDocuments;
         private CraneId _craneAssigned;
         private bool _isAvailable = true;
+        private DriverLocation _location;
 
         public string GetId() => _id.GetValue();
         public string GetDNI() => _dni.GetValue();
@@ -21,14 +22,16 @@ namespace ProvidersMS.src.Drivers.Domain
         public List<string> GetImagesDocuments() => _imagesDocuments;
         public string GetCraneAssigned() => _craneAssigned.GetValue();
         public bool GetIsAvailable() => _isAvailable;
+        public double GetDriverLocationLatitude() => _location.GetLatitude();
+        public double GetDriverLocationLongitude() => _location.GetLongitude();
         public void SetIsActiveLicensed(bool isActiveLicensed) => _isActiveLicensed = new DriverIsActiveLicensed(isActiveLicensed);
         public void SetCraneAssigned(CraneId craneAssigned) => _craneAssigned = craneAssigned;
         public bool SetIsAvailable(bool isAvailable) => _isAvailable = isAvailable;
 
-        public static Driver CreateDriver(DriverId id, DriverDNI dni, DriverIsActiveLicensed isActiveLicensed, List<string> imagesDocuments, CraneId craneAssigned)
+        public static Driver CreateDriver(DriverId id, DriverDNI dni, DriverIsActiveLicensed isActiveLicensed, List<string> imagesDocuments, CraneId craneAssigned, DriverLocation driverLocation)
         {
             var provider = new Driver(id);
-            provider.Apply(DriverCreated.CreateEvent(id, dni, isActiveLicensed, imagesDocuments, craneAssigned));
+            provider.Apply(DriverCreated.CreateEvent(id, dni, isActiveLicensed, imagesDocuments, craneAssigned, driverLocation));
             return provider;
         }
 
@@ -39,11 +42,12 @@ namespace ProvidersMS.src.Drivers.Domain
             _isActiveLicensed = new DriverIsActiveLicensed(context.IsActiveLicensed);
             _imagesDocuments = new List<string>(context.ImagesDocuments);
             _craneAssigned = new CraneId(context.CraneAssigned);
+            _location = new DriverLocation(context.DriverLocation.Latitude, context.DriverLocation.Longitude);
         }
 
         public override void ValidateState()
         {
-            if (_id == null || _dni == null || _isActiveLicensed == null || _imagesDocuments == null || _craneAssigned == null)
+            if (_id == null || _craneAssigned == null || _dni == null || _isActiveLicensed == null || _imagesDocuments == null || _location == null)
             {
                 throw new InvalidDriverException();
             }

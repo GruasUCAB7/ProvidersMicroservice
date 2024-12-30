@@ -2,9 +2,7 @@
 
 namespace ProvidersMS.src.Cranes.Domain.Exceptions
 {
-    public class InvalidCraneSizeTypeException : DomainException
+    public class InvalidCraneSizeException(string size) : DomainException(size)
     {
-        public InvalidCraneSizeTypeException() : base("Invalid crane size type") 
-        { }
     }
 }

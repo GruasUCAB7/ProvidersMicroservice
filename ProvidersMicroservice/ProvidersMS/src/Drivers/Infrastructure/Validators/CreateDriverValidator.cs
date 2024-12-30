@@ -16,7 +16,11 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Validators
             .NotEmpty().WithMessage("IsActiveLicensed is required.");
 
             RuleFor(x => x.CraneAssigned)
-            .NotEmpty().WithMessage("Crane assigned is required.");
+            .NotNull().WithMessage("Crane assigned is required.")
+            .When(x => !string.IsNullOrEmpty(x.CraneAssigned));
+
+            RuleFor(x => x.DriverLocation)
+            .NotEmpty().WithMessage("Driver location is required.");
         }
     }
 }

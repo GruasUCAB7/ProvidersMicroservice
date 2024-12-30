@@ -1,4 +1,4 @@
-﻿namespace ProvidersMS.src.Cranes.Application.Queries.Types
+﻿namespace ProvidersMS.src.Cranes.Application.Types
 {
     public record GetCraneResponse
     (
@@ -6,7 +6,7 @@
         string Brand,
         string Model,
         string Plate,
-        string CraneType,
+        string CraneSize,
         int Year,
         bool IsActive
     );

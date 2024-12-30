@@ -20,6 +20,8 @@ using ProvidersMS.src.Cranes.Application.Repositories;
 using ProvidersMS.src.Cranes.Application.Exceptions;
 using ProvidersMS.src.Drivers.Application.Queries.GetAll;
 using ProvidersMS.src.Drivers.Application.Queries.GetAll.Types;
+using ProvidersMS.Core.Application.GoogleApiService;
+using ProvidersMS.src.Drivers.Application.Commands.DisconnectDriver;
 
 namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
 {
@@ -33,6 +35,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
         IdGenerator<string> idGenerator,
         IValidator<CreateDriverWithImagesCommand> validatorCreate,
         IValidator<UpdateDriverCommand> validatorUpdate,
+        IGoogleApiService googleApiService,
         ILoggerContract logger) : ControllerBase
     {
         private readonly IDriverRepository _driverRepo = driverRepo;
@@ -42,6 +45,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
         private readonly IdGenerator<string> _idGenerator = idGenerator;
         private readonly IValidator<CreateDriverWithImagesCommand> _validatorCreate = validatorCreate;
         private readonly IValidator<UpdateDriverCommand> _validatorUpdate = validatorUpdate;
+        private readonly IGoogleApiService _googleApiService = googleApiService;
         private readonly ILoggerContract _logger = logger;
 
         [HttpPost]
@@ -57,8 +61,8 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
                     return StatusCode(400, errors);
                 }
 
-                var createDriverCommand = new CreateDriverCommand(data.DNI, data.IsActiveLicensed, data.CraneAssigned);
-                var createDriverService = new CreateDriverCommandHandler(_driverRepo, _craneRepo, _idGenerator);
+                var createDriverCommand = new CreateDriverCommand(data.DNI, data.IsActiveLicensed, data.CraneAssigned, data.DriverLocation);
+                var createDriverService = new CreateDriverCommandHandler(_driverRepo, _craneRepo, _idGenerator, _googleApiService);
                 var createDriverResult = await createDriverService.Execute(createDriverCommand);
                 if (createDriverResult.IsFailure)
                 {
@@ -159,7 +163,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
         {
             try
             {
-                var command = new UpdateDriverCommand(data.IsActiveLicensed, data.CraneAssigned, data.IsAvailable);
+                var command = new UpdateDriverCommand(data.IsActiveLicensed, data.CraneAssigned, data.IsAvailable, data.DriverLocation);
 
                 var validate = _validatorUpdate.Validate(command);
                 if (!validate.IsValid)
@@ -169,7 +173,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
                     return StatusCode(400, errors);
                 }
 
-                var handler = new UpdateDriverCommandHandler(_driverRepo);
+                var handler = new UpdateDriverCommandHandler(_driverRepo, _googleApiService);
                 var result = await handler.Execute((id, data));
                 if (result.IsSuccessful)
                 {
@@ -189,5 +193,31 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        [HttpPut("disconnect")]
+        public async Task<IActionResult> ValidateUpdateTimeDriver()
+        {
+            try
+            {
+                var handler = new DisconnectDriverCommandHandler(_driverRepo);
+                var result = await handler.Execute();
+                if (result)
+                {
+                    _logger.Log("Drivers updated");
+                    return Ok();
+                }
+                else
+                {
+                    _logger.Error("Failed to update drivers");
+                    return StatusCode(409, "Failed to update drivers");
+                }
+
+            } catch (Exception ex)
+            {
+                _logger.Exception("An error occurred while updating the drivers.", ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
     }
 }

@@ -7,15 +7,22 @@ namespace ProvidersMS.src.Drivers.Domain.Events
 
     public class DriverCreatedEvent(string dispatcherId, string name, DriverCreated context) : DomainEvent<object>(dispatcherId, name, context) { }
 
-    public class DriverCreated(string id, string dni, bool isActiveLicensed, List<string> imagesDocuments, string craneAssigned)
+    public class DriverCreated(string id, string dni, bool isActiveLicensed, List<string> imagesDocuments, string craneAssigned, DriverLocation driverLocation)
     {
         public readonly string Id = id;
         public readonly string DNI = dni;
         public readonly bool IsActiveLicensed = isActiveLicensed;
         public readonly List<string> ImagesDocuments = imagesDocuments;
         public readonly string CraneAssigned = craneAssigned;
+        public readonly DriverLocation DriverLocation = driverLocation;
 
-        static public DriverCreatedEvent CreateEvent(DriverId Id, DriverDNI DNI, DriverIsActiveLicensed IsActiveLicensed, List<string> ImagesDocuments, CraneId craneAssigned)
+        static public DriverCreatedEvent CreateEvent(
+            DriverId Id, 
+            DriverDNI DNI, 
+            DriverIsActiveLicensed IsActiveLicensed, 
+            List<string> ImagesDocuments, 
+            CraneId CraneAssigned,
+            DriverLocation DriverLocation)
         {
             return new DriverCreatedEvent(
                 Id.GetValue(),
@@ -25,7 +32,8 @@ namespace ProvidersMS.src.Drivers.Domain.Events
                     DNI.GetValue(),
                     IsActiveLicensed.GetValue(),
                     ImagesDocuments,
-                    craneAssigned.GetValue()
+                    CraneAssigned.GetValue(),
+                    DriverLocation
                 )
             );
         }

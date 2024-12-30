@@ -11,8 +11,5 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Models
 
         [BsonElement("src")]
         public required string Src { get; set; }
-
-        [BsonElement("createdDate")]
-        public required DateTime CreatedDate { get; set; }
     }
 }

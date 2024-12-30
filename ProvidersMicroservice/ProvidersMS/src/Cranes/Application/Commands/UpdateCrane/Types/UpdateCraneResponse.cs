@@ -6,7 +6,7 @@
         string Brand,
         string Model,
         string Plate,
-        string CraneType,
+        string CraneSize,
         int Year,
         bool IsActive
     );
