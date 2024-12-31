@@ -192,12 +192,12 @@ namespace ProvidersMS.src.Providers.Infrastructure.Repositories
         public async Task<List<Driver>> GetAvailableDrivers(GetAvailableDriversQuery data)
         {
             var filterBuilder = Builders<BsonDocument>.Filter;
-            var filter = data.IsAvailable?.ToLower() switch
+            var filter = filterBuilder.Eq("isAvailable", true);
+
+            if (data.IsAvailable?.ToLower() == "no disponible")
             {
-                "disponible" => filterBuilder.Eq("isAvailable", true),
-                "no disponible" => filterBuilder.Eq("isAvailable", false),
-                _ => filterBuilder.Empty
-            };
+                filter = filterBuilder.Eq("isAvailable", false);
+            }
 
             var driverEntities = await _driverCollection
                 .Find(filter)
