@@ -6,7 +6,6 @@
         string? CraneAssigned,
         bool? IsAvailable,
         string? DriverLocation,
-        bool? IsActive,
-        List<string> ImagesDocuments
+        bool? IsActive
     );
 }

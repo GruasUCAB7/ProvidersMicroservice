@@ -45,6 +45,12 @@ namespace ProvidersMS.src.Drivers.Application.Commands.CreateDriver
                 throw new CraneNotAvailableException();
             }
 
+            var isDriverWithSameCraneExist = await _driverRepository.IsCraneAssociatedWithAnotherDriver(data.CraneAssigned);
+            if (isDriverWithSameCraneExist)
+            {
+                throw new Exception("A driver is already assigned to this crane.");
+            }
+
             var driverLocationResult = await _googleApiService.GetCoordinatesFromAddress(data.DriverLocation);
             if (driverLocationResult == null)
             {

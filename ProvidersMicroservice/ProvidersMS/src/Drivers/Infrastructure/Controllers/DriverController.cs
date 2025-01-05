@@ -50,12 +50,17 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
         private readonly ILoggerContract _logger = logger;
 
         [HttpPost]
-        public async Task<IActionResult> CreateDriver([FromForm] CreateDriverWithImagesCommand data)
+        public async Task<IActionResult> CreateDriver([FromForm] CreateDriverWithImagesCommand data, [FromHeader(Name = "Authorization")] string token)
         {
             try
             {
+                if (string.IsNullOrEmpty(token))
+                {
+                    return StatusCode(400, "Invalid or missing Authorization header");
+                }
+
                 var userExist = new RestRequest($"https://localhost:4051/user/{data.UserId}", Method.Get);
-                userExist.AddHeader("Authorization", $"Bearer {data.TokenJWT}");
+                userExist.AddHeader("Authorization", $"Bearer {token}");
                 var response = await _restClient.ExecuteAsync(userExist);
                 if (!response.IsSuccessful)
                 {
@@ -171,7 +176,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
         {
             try
             {
-                var command = new UpdateDriverCommand(data.IsActiveLicensed, data.CraneAssigned, data.IsAvailable, data.DriverLocation, data.IsActive, data.ImagesDocuments);
+                var command = new UpdateDriverCommand(data.IsActiveLicensed, data.CraneAssigned, data.IsAvailable, data.DriverLocation, data.IsActive);
 
                 var validate = _validatorUpdate.Validate(command);
                 if (!validate.IsValid)

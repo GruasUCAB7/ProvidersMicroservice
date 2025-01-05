@@ -5,7 +5,6 @@
         string Rif,
         string ProviderType,
         List<string>? FleetOfCranes,
-        List<string>? Drivers,
-        string TokenJWT
+        List<string>? Drivers
     );
 }
