@@ -4,5 +4,6 @@
         IFormFile LicenseImage,
         IFormFile DNIImage,
         IFormFile RoadMedicalCertificateImage,
-        IFormFile CivilLiabilityImage);
+        IFormFile CivilLiabilityImage
+    );
 }

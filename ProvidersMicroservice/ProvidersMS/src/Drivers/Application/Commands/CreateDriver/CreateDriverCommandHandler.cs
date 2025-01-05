@@ -51,9 +51,8 @@ namespace ProvidersMS.src.Drivers.Application.Commands.CreateDriver
                 return Result<CreateDriverResponse>.Failure(new CoordinatesNotFoundException("Driver location not found."));
             }
 
-            var id = _idGenerator.Generate();
             var driver = Driver.CreateDriver(
-                new DriverId(id),
+                new DriverId(data.UserId),
                 new DriverDNI(data.DNI),
                 new DriverIsActiveLicensed(data.IsActiveLicensed),
                 new List<string>(),
@@ -62,7 +61,7 @@ namespace ProvidersMS.src.Drivers.Application.Commands.CreateDriver
             );
             await _driverRepository.Save(driver);
 
-            return Result<CreateDriverResponse>.Success(new CreateDriverResponse(id));
+            return Result<CreateDriverResponse>.Success(new CreateDriverResponse(data.UserId));
         }
     }
 }

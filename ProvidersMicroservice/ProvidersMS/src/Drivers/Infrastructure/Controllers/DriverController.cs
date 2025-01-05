@@ -22,6 +22,7 @@ using ProvidersMS.src.Drivers.Application.Queries.GetAll;
 using ProvidersMS.src.Drivers.Application.Queries.GetAll.Types;
 using ProvidersMS.Core.Application.GoogleApiService;
 using ProvidersMS.src.Drivers.Application.Commands.DisconnectDriver;
+using RestSharp;
 
 namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
 {
@@ -30,22 +31,22 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
     public class DriverController(
         IDriverRepository driverRepo,
         ICraneRepository craneRepo,
-        IImageDocumentRepository imageRepo,
         ImageStorage imageStorage,
         IdGenerator<string> idGenerator,
         IValidator<CreateDriverWithImagesCommand> validatorCreate,
         IValidator<UpdateDriverCommand> validatorUpdate,
         IGoogleApiService googleApiService,
+        IRestClient restClient,
         ILoggerContract logger) : ControllerBase
     {
         private readonly IDriverRepository _driverRepo = driverRepo;
         private readonly ICraneRepository _craneRepo = craneRepo;
-        private readonly IImageDocumentRepository _imageRepo = imageRepo;
         private readonly ImageStorage _imageStorage = imageStorage;
         private readonly IdGenerator<string> _idGenerator = idGenerator;
         private readonly IValidator<CreateDriverWithImagesCommand> _validatorCreate = validatorCreate;
         private readonly IValidator<UpdateDriverCommand> _validatorUpdate = validatorUpdate;
         private readonly IGoogleApiService _googleApiService = googleApiService;
+        private readonly IRestClient _restClient = restClient;
         private readonly ILoggerContract _logger = logger;
 
         [HttpPost]
@@ -53,6 +54,14 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
         {
             try
             {
+                var userExist = new RestRequest($"https://localhost:4051/user/{data.UserId}", Method.Get);
+                userExist.AddHeader("Authorization", $"Bearer {data.TokenJWT}");
+                var response = await _restClient.ExecuteAsync(userExist);
+                if (!response.IsSuccessful)
+                {
+                    throw new Exception($"Failed to get user id. Content: {response.Content}");
+                }
+
                 var validate = _validatorCreate.Validate(data);
                 if (!validate.IsValid)
                 {
@@ -61,7 +70,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
                     return StatusCode(400, errors);
                 }
 
-                var createDriverCommand = new CreateDriverCommand(data.DNI, data.IsActiveLicensed, data.CraneAssigned, data.DriverLocation);
+                var createDriverCommand = new CreateDriverCommand(data.UserId, data.DNI, data.IsActiveLicensed, data.CraneAssigned, data.DriverLocation);
                 var createDriverService = new CreateDriverCommandHandler(_driverRepo, _craneRepo, _idGenerator, _googleApiService);
                 var createDriverResult = await createDriverService.Execute(createDriverCommand);
                 if (createDriverResult.IsFailure)
@@ -80,7 +89,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
                     data.RoadMedicalCertificateImage,
                     data.CivilLiabilityImage
                 );
-                var uploadImagesService = new UploadImagesDocumentsCommandHandler(_idGenerator, _imageRepo, _imageStorage);
+                var uploadImagesService = new UploadImagesDocumentsCommandHandler(_idGenerator, _imageStorage);
                 var uploadImageResult = await uploadImagesService.Execute(uploadImagesCommand);
                 if (uploadImageResult.IsFailure)
                 {
@@ -88,14 +97,13 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
                 }
 
                 var driverId = createDriverResult.Unwrap().Id;
+                var imageUrls = uploadImageResult.Unwrap().Urls;
+
                 var updateImagesCommand = new UpdateDriverImagesCommand(
                     driverId,
-                    data.LicenseImage,
-                    data.DNIImage,
-                    data.RoadMedicalCertificateImage,
-                    data.CivilLiabilityImage
+                    imageUrls
                 );
-                var updateImagesService = new UpdateImagesDocumentsCommandHandler(_driverRepo, uploadImagesService);
+                var updateImagesService = new UpdateImagesDocumentsCommandHandler(_driverRepo);
                 var updateImagesResult = await updateImagesService.Execute(updateImagesCommand);
                 if (updateImagesResult.IsFailure)
                 {
@@ -163,7 +171,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
         {
             try
             {
-                var command = new UpdateDriverCommand(data.IsActiveLicensed, data.CraneAssigned, data.IsAvailable, data.DriverLocation);
+                var command = new UpdateDriverCommand(data.IsActiveLicensed, data.CraneAssigned, data.IsAvailable, data.DriverLocation, data.IsActive, data.ImagesDocuments);
 
                 var validate = _validatorUpdate.Validate(command);
                 if (!validate.IsValid)

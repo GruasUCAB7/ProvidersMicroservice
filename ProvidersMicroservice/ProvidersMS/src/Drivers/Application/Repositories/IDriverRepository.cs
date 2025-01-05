@@ -11,7 +11,6 @@ namespace ProvidersMS.src.Drivers.Application.Repositories
         Task<List<Driver>> GetAll(GetAllDriversQuery data);
         Task<Optional<Driver>> GetById(string id);
         Task<Result<Driver>> Save(Driver driver);
-        Task<Result<object>> UpdateDriverImages(Driver driver);
         Task<Result<Driver>> Update(Driver driver);
         Task ValidateUpdateTimeDriver();
     }

@@ -2,9 +2,11 @@
 {
     public record UpdateDriverImagesCommand(
         string DriverId, 
-        IFormFile LicenseImage,
-        IFormFile DNIImage,
-        IFormFile RoadMedicalCertificateImage,
-        IFormFile CivilLiabilityImage);
+        List<string> ImagesUrl
+        //IFormFile LicenseImage,
+        //IFormFile DNIImage,
+        //IFormFile RoadMedicalCertificateImage,
+        //IFormFile CivilLiabilityImage
+        );
 
 }

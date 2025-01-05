@@ -46,7 +46,6 @@ builder.Services.AddTransient<IValidator<UpdateProviderCommand>, UpdateProviderV
 builder.Services.AddScoped<ICraneRepository, MongoCraneRepository>();
 builder.Services.AddScoped<IDriverRepository, MongoDriverRepository>();
 builder.Services.AddScoped<IProviderRepository, MongoProviderRepository>();
-builder.Services.AddScoped<IImageDocumentRepository, MongoImageDocumentRepository>();
 builder.Services.AddScoped<IdGenerator<string>, GuidGenerator>();
 builder.Services.AddScoped<ILoggerContract, Logger>();
 builder.Services.AddScoped<IGoogleApiService, GoogleApiService>();

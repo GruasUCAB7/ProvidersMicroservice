@@ -2,6 +2,7 @@
 {
     public record CreateDriverCommand
     (
+        string UserId,
         string DNI,
         bool IsActiveLicensed,
         string CraneAssigned,

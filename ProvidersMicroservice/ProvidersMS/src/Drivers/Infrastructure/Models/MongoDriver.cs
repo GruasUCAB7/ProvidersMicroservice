@@ -27,6 +27,9 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Models
         [BsonElement("driverLocation")]
         public required MongoCoordinates DriverLocation { get; set; }
 
+        [BsonElement("isActive")]
+        public required bool IsActive { get; set; }
+
         [BsonElement("createdDate")]
         public required DateTime CreatedDate { get; set; }
 

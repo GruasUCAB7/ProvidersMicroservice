@@ -26,8 +26,9 @@ namespace ProvidersMS.src.Drivers.Application.Queries.GetById
                 driver.GetIsActiveLicensed(),
                 driver.GetImagesDocuments(),
                 driver.GetCraneAssigned(),
-            driver.GetIsAvailable(),
-            new CoordinatesDto(driver.GetDriverLocationLatitude(), driver.GetDriverLocationLongitude())
+                driver.GetIsAvailable(),
+                new CoordinatesDto(driver.GetDriverLocationLatitude(), driver.GetDriverLocationLongitude()),
+                driver.GetIsActive()
             );
 
             return Result<GetDriverResponse>.Success(response);
