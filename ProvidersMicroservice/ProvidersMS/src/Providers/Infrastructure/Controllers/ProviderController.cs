@@ -44,19 +44,24 @@ namespace ProvidersMS.src.Providers.Infrastructure.Controllers
         private readonly ILoggerContract _logger = logger;
 
         [HttpPost]
-        public async Task<IActionResult> CreateProvider([FromBody] CreateProviderCommand data)
+        public async Task<IActionResult> CreateProvider([FromBody] CreateProviderCommand data, [FromHeader(Name = "Authorization")] string token)
         {
             try
             {
+                if (string.IsNullOrEmpty(token))
+                {
+                    return StatusCode(400, "Invalid or missing Authorization header");
+                }
+
                 var userExist = new RestRequest($"https://localhost:4051/user/{data.UserId}", Method.Get);
-                userExist.AddHeader("Authorization", $"Bearer {data.TokenJWT}");
+                userExist.AddHeader("Authorization", $"Bearer {token}");
                 var response = await _restClient.ExecuteAsync(userExist);
                 if (!response.IsSuccessful)
                 {
                     throw new Exception($"Failed to get user id. Content: {response.Content}");
                 }
 
-                var command = new CreateProviderCommand(data.UserId, data.Rif, data.ProviderType, data.FleetOfCranes, data.Drivers, data.TokenJWT);
+                var command = new CreateProviderCommand(data.UserId, data.Rif, data.ProviderType, data.FleetOfCranes, data.Drivers);
 
                 var validate = _validatorCreate.Validate(command);
                 if (!validate.IsValid)

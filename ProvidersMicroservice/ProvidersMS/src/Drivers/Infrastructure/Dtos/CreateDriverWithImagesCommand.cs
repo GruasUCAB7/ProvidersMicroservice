@@ -9,7 +9,6 @@
         IFormFile DNIImage,
         IFormFile RoadMedicalCertificateImage,
         IFormFile CivilLiabilityImage,
-        string DriverLocation,
-        string TokenJWT
+        string DriverLocation
     );
 }

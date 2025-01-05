@@ -13,5 +13,6 @@ namespace ProvidersMS.src.Drivers.Application.Repositories
         Task<Result<Driver>> Save(Driver driver);
         Task<Result<Driver>> Update(Driver driver);
         Task ValidateUpdateTimeDriver();
+        Task<bool> IsCraneAssociatedWithAnotherDriver(string craneId);
     }
 }

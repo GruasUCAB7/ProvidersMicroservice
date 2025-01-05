@@ -2,7 +2,6 @@
 using ProvidersMS.src.Cranes.Domain.Events;
 using ProvidersMS.src.Cranes.Domain.Exceptions;
 using ProvidersMS.src.Cranes.Domain.ValueObjects;
-using ProvidersMS.src.Drivers.Domain.ValueObjects;
 
 namespace ProvidersMS.src.Cranes.Domain
 {
@@ -15,7 +14,6 @@ namespace ProvidersMS.src.Cranes.Domain
         private CraneSize _craneSize;
         private CraneYear _year;
         private bool _isActive = true;
-        private DriverLocation _location;
 
         public string GetId() => _id.GetValue();
         public string GetBrand() => _brand.GetValue();

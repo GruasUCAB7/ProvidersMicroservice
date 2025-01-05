@@ -8,6 +8,7 @@ using ProvidersMS.src.Drivers.Application.Repositories;
 using ProvidersMS.src.Drivers.Domain;
 using ProvidersMS.src.Drivers.Domain.ValueObjects;
 using ProvidersMS.src.Drivers.Infrastructure.Models;
+using System.Configuration.Provider;
 
 namespace ProvidersMS.src.Drivers.Infrastructure.Repositories
 {
@@ -67,8 +68,8 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Repositories
                 );
                 driver.SetIsAvailable(d.GetValue("isAvailable").AsBoolean);
                 driver.SetIsActive(d.GetValue("isActive").AsBoolean);
-                
-                
+
+
                 return driver;
 
             }).ToList();
@@ -164,7 +165,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Repositories
             if (driver.GetIsActiveLicensed() != null)
             {
                 updateDefinitions.Add(updateDefinitionBuilder.Set("isActiveLicensed", driver.GetIsActiveLicensed()));
-            }   
+            }
 
             if (driver.GetCraneAssigned() != null)
             {
@@ -226,6 +227,13 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Repositories
                     await _driverCollection.UpdateOneAsync(filter, update);
                 }
             }
+        }
+
+        public async Task<bool> IsCraneAssociatedWithAnotherDriver(string craneId)
+        {
+            var filter = Builders<BsonDocument>.Filter.Eq("craneAssigned", craneId);
+            var driver = await _driverCollection.Find(filter).FirstOrDefaultAsync();
+            return driver != null;
         }
     }
 }
