@@ -35,8 +35,4 @@
 		<PackageReference Include="RestSharp" Version="112.1.0" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="src\Drivers\Application\Commands\DisconnectDriver\Types\" />
-	</ItemGroup>
-
 </Project>

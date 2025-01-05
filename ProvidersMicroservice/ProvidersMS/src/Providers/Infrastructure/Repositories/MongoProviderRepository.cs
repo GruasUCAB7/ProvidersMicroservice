@@ -45,18 +45,12 @@ namespace ProvidersMS.src.Providers.Infrastructure.Repositories
 
             var providers = providerEntities.Select(p =>
             {
-                var fleetOfCranes = p.GetValue("fleetOfCranes").AsBsonArray
-                    .Select(c => new CraneId(c.AsString)).ToList();
-
-                var drivers = p.GetValue("drivers").AsBsonArray
-                    .Select(d => new DriverId(d.AsString)).ToList();
-
                 var provider = Provider.CreateProvider(
                     new ProviderId(p.GetValue("_id").AsString),
                     new ProviderRif(p.GetValue("rif").AsString),
-                    Enum.Parse<ProviderType>(p.GetValue("providerType").AsString),
-                    fleetOfCranes,
-                    drivers
+                    new ProviderType(p.GetValue("providerType").AsString),
+                    p.GetValue("fleetOfCranes").AsBsonArray.Select(c => new CraneId(c.AsString)).ToList(),
+                    p.GetValue("drivers").AsBsonArray.Select(d => new DriverId(d.AsString)).ToList()
                 );
 
                 provider.SetIsActive(p.GetValue("isActive").AsBoolean);
@@ -85,7 +79,7 @@ namespace ProvidersMS.src.Providers.Infrastructure.Repositories
             var provider = Provider.CreateProvider(
                 new ProviderId(providerDocument.GetValue("_id").AsString),
                 new ProviderRif(providerDocument.GetValue("rif").AsString),
-                Enum.Parse<ProviderType>(providerDocument.GetValue("providerType").AsString),
+                new ProviderType(providerDocument.GetValue("providerType").AsString),
                 fleetOfCranes,
                 drivers
             );
@@ -126,7 +120,7 @@ namespace ProvidersMS.src.Providers.Infrastructure.Repositories
             var savedProvider = Provider.CreateProvider(
                 new ProviderId(mongoProvider.Id),
                 new ProviderRif(mongoProvider.Rif),
-                Enum.Parse<ProviderType>(mongoProvider.ProviderType),
+                new ProviderType(mongoProvider.ProviderType),
                 mongoProvider.FleetOfCranes.Select(c => new CraneId(c)).ToList(),
                 mongoProvider.Drivers.Select(d => new DriverId(d)).ToList()
             );
@@ -232,8 +226,8 @@ namespace ProvidersMS.src.Providers.Infrastructure.Repositories
 
                 if (providerDocument != null)
                 {
-                    var providerType = Enum.Parse<ProviderType>(providerDocument.GetValue("providerType").AsString);
-                    if (providerType == ProviderType.Interno)
+                    var providerType = new ProviderType(providerDocument.GetValue("providerType").AsString);
+                    if (providerType.Type == "Interno")
                     {
                         internalProviderDrivers.Add(driver);
                     }
