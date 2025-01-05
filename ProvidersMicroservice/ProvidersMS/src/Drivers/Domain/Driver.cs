@@ -15,6 +15,7 @@ namespace ProvidersMS.src.Drivers.Domain
         private CraneId _craneAssigned;
         private bool _isAvailable = true;
         private DriverLocation _location;
+        private bool _isActive = true; 
 
         public string GetId() => _id.GetValue();
         public string GetDNI() => _dni.GetValue();
@@ -22,11 +23,14 @@ namespace ProvidersMS.src.Drivers.Domain
         public List<string> GetImagesDocuments() => _imagesDocuments;
         public string GetCraneAssigned() => _craneAssigned.GetValue();
         public bool GetIsAvailable() => _isAvailable;
+        public bool GetIsActive() => _isActive;
         public double GetDriverLocationLatitude() => _location.GetLatitude();
         public double GetDriverLocationLongitude() => _location.GetLongitude();
         public void SetIsActiveLicensed(bool isActiveLicensed) => _isActiveLicensed = new DriverIsActiveLicensed(isActiveLicensed);
         public void SetCraneAssigned(CraneId craneAssigned) => _craneAssigned = craneAssigned;
         public bool SetIsAvailable(bool isAvailable) => _isAvailable = isAvailable;
+        public bool SetIsActive(bool isActive) => _isActive = isActive;
+        public void SetImagesDocuments(List<string> imagesDocuments) => _imagesDocuments = imagesDocuments;
 
         public static Driver CreateDriver(DriverId id, DriverDNI dni, DriverIsActiveLicensed isActiveLicensed, List<string> imagesDocuments, CraneId craneAssigned, DriverLocation driverLocation)
         {

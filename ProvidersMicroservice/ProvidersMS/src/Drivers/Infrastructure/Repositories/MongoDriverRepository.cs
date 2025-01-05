@@ -3,7 +3,6 @@ using MongoDB.Driver;
 using ProvidersMS.Core.Infrastructure.Data;
 using ProvidersMS.Core.Utils.Result;
 using ProvidersMS.src.Cranes.Domain.ValueObjects;
-using ProvidersMS.src.Drivers.Application.Exceptions;
 using ProvidersMS.src.Drivers.Application.Queries.GetAll.Types;
 using ProvidersMS.src.Drivers.Application.Repositories;
 using ProvidersMS.src.Drivers.Domain;
@@ -66,8 +65,10 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Repositories
                         d.GetValue("driverLocation").AsBsonDocument.GetValue("longitude").AsDouble
                     )
                 );
-
                 driver.SetIsAvailable(d.GetValue("isAvailable").AsBoolean);
+                driver.SetIsActive(d.GetValue("isActive").AsBoolean);
+                
+                
                 return driver;
 
             }).ToList();
@@ -97,6 +98,8 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Repositories
             );
 
             driver.SetIsAvailable(driverDocument.GetValue("isAvailable").AsBoolean);
+            driver.SetIsActive(driverDocument.GetValue("isActive").AsBoolean);
+
             return Core.Utils.Optional.Optional<Driver>.Of(driver);
         }
 
@@ -115,6 +118,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Repositories
                     Latitude = driver.GetDriverLocationLatitude(),
                     Longitude = driver.GetDriverLocationLongitude()
                 },
+                IsActive = driver.GetIsActive(),
                 CreatedDate = DateTime.UtcNow,
                 UpdatedDate = DateTime.UtcNow
             };
@@ -133,6 +137,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Repositories
                         {"longitude", mongoDriver.DriverLocation.Longitude}
                     }
                 },
+                {"isActive", mongoDriver.IsActive},
                 {"createdDate", mongoDriver.CreatedDate},
                 {"updatedDate", mongoDriver.UpdatedDate}
             };
@@ -148,31 +153,6 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Repositories
                 new DriverLocation(mongoDriver.DriverLocation.Latitude, mongoDriver.DriverLocation.Longitude)
             );
             return Result<Driver>.Success(savedDriver);
-        }
-
-        public async Task<Result<object>> UpdateDriverImages(Driver driver)
-        {
-            try
-            {
-                var filter = Builders<BsonDocument>.Filter.Eq("_id", driver.GetId());
-                var existingDriver = await _driverCollection.FindAsync(filter);
-                var result = await existingDriver.FirstOrDefaultAsync();
-
-                if (result == null)
-                {
-                    return Result<object>.Failure(new DriverNotFoundException());
-                }
-
-                var imagesDocuments = driver.GetImagesDocuments();
-                var update = Builders<BsonDocument>.Update.Set("imageDocuments", new BsonArray(imagesDocuments));
-                await _driverCollection.UpdateOneAsync(filter, update);
-
-                return Result<object>.Success(imagesDocuments);
-            }
-            catch (Exception ex)
-            {
-                return Result<object>.Failure(ex);
-            }
         }
 
         public async Task<Result<Driver>> Update(Driver driver)
@@ -196,6 +176,11 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Repositories
                 updateDefinitions.Add(updateDefinitionBuilder.Set("isAvailable", driver.GetIsAvailable()));
             }
 
+            if (driver.GetIsActive() != null)
+            {
+                updateDefinitions.Add(updateDefinitionBuilder.Set("isActive", driver.GetIsActive()));
+            }
+
             if (driver.GetDriverLocationLatitude() != 0 || driver.GetDriverLocationLongitude() != 0)
             {
                 var driverLocation = new BsonDocument
@@ -204,6 +189,12 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Repositories
                     { "longitude", driver.GetDriverLocationLongitude() }
                 };
                 updateDefinitions.Add(updateDefinitionBuilder.Set("driverLocation", driverLocation));
+            }
+
+            var imagesDocuments = driver.GetImagesDocuments();
+            if (imagesDocuments != null)
+            {
+                updateDefinitions.Add(updateDefinitionBuilder.Set("imageDocuments", new BsonArray(imagesDocuments)));
             }
 
             updateDefinitions.Add(updateDefinitionBuilder.Set("updatedDate", DateTime.UtcNow));

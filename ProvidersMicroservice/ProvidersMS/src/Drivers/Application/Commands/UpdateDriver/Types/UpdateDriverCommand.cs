@@ -5,6 +5,8 @@
         bool? IsActiveLicensed,
         string? CraneAssigned,
         bool? IsAvailable,
-        string? DriverLocation
+        string? DriverLocation,
+        bool? IsActive,
+        List<string> ImagesDocuments
     );
 }

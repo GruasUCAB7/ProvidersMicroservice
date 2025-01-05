@@ -25,10 +25,10 @@ namespace ProvidersMS.src.Drivers.Application.Queries.GetAll
                 driver.GetIsActiveLicensed(),
                 driver.GetImagesDocuments(),
                 driver.GetCraneAssigned(),
-            driver.GetIsAvailable(),
-            new CoordinatesDto(driver.GetDriverLocationLatitude(), driver.GetDriverLocationLongitude())
-            )
-            ).ToArray();
+                driver.GetIsAvailable(),
+                new CoordinatesDto(driver.GetDriverLocationLatitude(), driver.GetDriverLocationLongitude()),
+                driver.GetIsActive()
+            )).ToArray();
 
             return Result<GetDriverResponse[]>.Success(response);
         }

@@ -8,7 +8,8 @@
         List<string> ImagesDocuments,
         string CraneAssigned,
         bool IsAvailable,
-        CoordinatesDto DriverLocation
+        CoordinatesDto DriverLocation,
+        bool IsActive
     );
 
     public record CoordinatesDto(
