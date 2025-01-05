@@ -2,10 +2,7 @@
 
 namespace ProvidersMS.src.Providers.Domain.Exceptions
 {
-    public class InvalidProviderTypeException : DomainException
+    public class InvalidProviderTypeException(string type) : DomainException(type)
     {
-        public InvalidProviderTypeException() : base("Invalid provider type")
-        {
-        }
     }
 }

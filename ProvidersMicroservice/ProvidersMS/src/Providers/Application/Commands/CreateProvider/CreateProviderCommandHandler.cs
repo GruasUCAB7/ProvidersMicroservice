@@ -81,19 +81,19 @@ namespace ProvidersMS.src.Providers.Application.Commands.CreateProvider
                 }
             }
 
-            var id = _idGenerator.Generate();
-            var providerType = (ProviderType)Enum.Parse(typeof(ProviderType), data.ProviderType);
-            var provider = Provider.CreateProvider(
-                new ProviderId(id),
-                new ProviderRif(data.Rif),
-                providerType,
-                data.FleetOfCranes?.Select(c => new CraneId(c)).ToList(),
-                data.Drivers?.Select(d => new DriverId(d)).ToList()
+            var fleetOfCranes = data.FleetOfCranes?.Select(crane => new CraneId(crane)).ToList();
+            var drivers = data.Drivers?.Select(driver => new DriverId(driver)).ToList();
 
+            var provider = Provider.CreateProvider(
+                new ProviderId(data.UserId),
+                new ProviderRif(data.Rif),
+                new ProviderType(data.ProviderType),
+                fleetOfCranes,
+                drivers
             );
             await _providerRepository.Save(provider);
 
-            return Result<CreateProviderResponse>.Success(new CreateProviderResponse(id));
+            return Result<CreateProviderResponse>.Success(new CreateProviderResponse(data.UserId));
         }
     }
 }

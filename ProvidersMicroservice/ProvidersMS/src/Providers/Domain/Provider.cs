@@ -10,7 +10,6 @@ namespace ProvidersMS.src.Providers.Domain
     public class Provider(ProviderId id) : AggregateRoot<ProviderId>(id)
     {
         private ProviderId _id = id;
-        //private UserId userId;
         private ProviderRif _rif;
         private ProviderType _type;
         private List<CraneId> _fleetOfCranes;
@@ -49,14 +48,15 @@ namespace ProvidersMS.src.Providers.Domain
             }
         }
 
-        public static Provider CreateProvider(ProviderId id, ProviderRif rif, ProviderType type, List<CraneId> fleetOfCranes, List<DriverId> drivers)
+        public static Provider CreateProvider(
+            ProviderId id, 
+            ProviderRif rif, 
+            ProviderType type, 
+            List<CraneId> fleetOfCranes, 
+            List<DriverId> drivers)
         {
             var provider = new Provider(id);
-            provider._rif = rif;
-            provider._type = type;
-            provider._fleetOfCranes = fleetOfCranes ?? new List<CraneId>();
-            provider._drivers = drivers ?? new List<DriverId>();
-            provider.Apply(ProviderCreated.CreateEvent(id, rif, type, provider._fleetOfCranes, provider._drivers));
+            provider.Apply(ProviderCreated.CreateEvent(id, rif, type, fleetOfCranes, drivers));
             return provider;
         }
 
@@ -64,13 +64,14 @@ namespace ProvidersMS.src.Providers.Domain
         {
             _id = new ProviderId(context.Id);
             _rif = new ProviderRif(context.Rif);
-            _type = Enum.Parse<ProviderType>(context.Type);
-            _fleetOfCranes = context.FleetOfCranes.Select(id => new CraneId(id)).ToList();
+            _type = new ProviderType(context.Type);
+            _fleetOfCranes = new List<CraneId>(context.FleetOfCranes);
+            _drivers = new List<DriverId>(context.Drivers);
         }
 
         public override void ValidateState()
         {
-            if (_id == null || _rif == null)
+            if (_id == null || _rif == null || _type ==null)
             {
                 throw new InvalidProviderException();
             }

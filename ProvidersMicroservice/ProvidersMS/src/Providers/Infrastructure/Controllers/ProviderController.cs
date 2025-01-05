@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
+using RestSharp;
 using ProvidersMS.Core.Application.IdGenerator;
 using ProvidersMS.Core.Application.Logger;
 using ProvidersMS.src.Cranes.Application.Repositories;
@@ -30,6 +31,7 @@ namespace ProvidersMS.src.Providers.Infrastructure.Controllers
         IdGenerator<string> idGenerator,
         IValidator<CreateProviderCommand> validatorCreate,
         IValidator<UpdateProviderCommand> validatorUpdate,
+        IRestClient restClient,
         ILoggerContract logger) : ControllerBase
     {
         private readonly IProviderRepository _providerRepo = providerRepo;
@@ -38,6 +40,7 @@ namespace ProvidersMS.src.Providers.Infrastructure.Controllers
         private readonly IdGenerator<string> _idGenerator = idGenerator;
         private readonly IValidator<CreateProviderCommand> _validatorCreate = validatorCreate;
         private readonly IValidator<UpdateProviderCommand> _validatorUpdate = validatorUpdate;
+        private readonly IRestClient _restClient = restClient;
         private readonly ILoggerContract _logger = logger;
 
         [HttpPost]
@@ -45,7 +48,15 @@ namespace ProvidersMS.src.Providers.Infrastructure.Controllers
         {
             try
             {
-                var command = new CreateProviderCommand(data.Rif, data.ProviderType, data.FleetOfCranes, data.Drivers);
+                var userExist = new RestRequest($"https://localhost:4051/user/{data.UserId}", Method.Get);
+                userExist.AddHeader("Authorization", $"Bearer {data.TokenJWT}");
+                var response = await _restClient.ExecuteAsync(userExist);
+                if (!response.IsSuccessful)
+                {
+                    throw new Exception($"Failed to get user id. Content: {response.Content}");
+                }
+
+                var command = new CreateProviderCommand(data.UserId, data.Rif, data.ProviderType, data.FleetOfCranes, data.Drivers, data.TokenJWT);
 
                 var validate = _validatorCreate.Validate(command);
                 if (!validate.IsValid)

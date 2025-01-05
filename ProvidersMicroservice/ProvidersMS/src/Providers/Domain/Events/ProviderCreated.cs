@@ -8,13 +8,19 @@ namespace ProvidersMS.src.Providers.Domain.Events
 
     public class ProviderCreatedEvent(string dispatcherId, string name, ProviderCreated context) : DomainEvent<object>(dispatcherId, name, context) { }
 
-    public class ProviderCreated(string id, string rif, string type, string[] fleetOfCranes, string[] drivers)
+    public class ProviderCreated(
+        string id, 
+        string rif, 
+        string type, 
+        List<CraneId> fleetOfCranes,
+        List<DriverId> drivers
+    )
     {
         public readonly string Id = id;
         public readonly string Rif = rif;
         public readonly string Type = type;
-        public readonly string[] FleetOfCranes = fleetOfCranes;
-        public readonly string[] Drivers = drivers;
+        public readonly List<CraneId> FleetOfCranes = fleetOfCranes;
+        public readonly List<DriverId> Drivers = drivers;
 
         static public ProviderCreatedEvent CreateEvent(ProviderId Id, ProviderRif Rif, ProviderType type, List<CraneId> FleetOfCranes, List<DriverId> Drivers)
         {
@@ -25,8 +31,8 @@ namespace ProvidersMS.src.Providers.Domain.Events
                     Id.GetValue(),
                     Rif.GetValue(),
                     type.GetValue(),
-                    FleetOfCranes.Select(c => c.GetValue()).ToArray(),
-                    Drivers.Select(d => d.GetValue()).ToArray()
+                    FleetOfCranes,
+                    Drivers
                 )
             );
         }
