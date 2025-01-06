@@ -14,5 +14,6 @@ namespace ProvidersMS.src.Drivers.Application.Repositories
         Task<Result<Driver>> Update(Driver driver);
         Task ValidateUpdateTimeDriver();
         Task<bool> IsCraneAssociatedWithAnotherDriver(string craneId);
+        Task UpdateDriverLocation(string driverId, double latitude, double longitude);
     }
 }

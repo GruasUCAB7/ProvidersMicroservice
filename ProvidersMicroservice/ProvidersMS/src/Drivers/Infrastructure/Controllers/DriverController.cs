@@ -23,6 +23,9 @@ using ProvidersMS.src.Drivers.Application.Queries.GetAll.Types;
 using ProvidersMS.Core.Application.GoogleApiService;
 using ProvidersMS.src.Drivers.Application.Commands.DisconnectDriver;
 using RestSharp;
+using ProvidersMS.src.Drivers.Application.Commands.UpdateDriverLocation.Types;
+using ProvidersMS.src.Drivers.Application.Commands.UpdateDriverLocation;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
 {
@@ -35,6 +38,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
         IdGenerator<string> idGenerator,
         IValidator<CreateDriverWithImagesCommand> validatorCreate,
         IValidator<UpdateDriverCommand> validatorUpdate,
+        IValidator<UpdateDriverLocationCommand> validatorUpdateLocation,
         IGoogleApiService googleApiService,
         IRestClient restClient,
         ILoggerContract logger) : ControllerBase
@@ -45,11 +49,13 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
         private readonly IdGenerator<string> _idGenerator = idGenerator;
         private readonly IValidator<CreateDriverWithImagesCommand> _validatorCreate = validatorCreate;
         private readonly IValidator<UpdateDriverCommand> _validatorUpdate = validatorUpdate;
+        private readonly IValidator<UpdateDriverLocationCommand> _validatorUpdateLocation = validatorUpdateLocation;
         private readonly IGoogleApiService _googleApiService = googleApiService;
         private readonly IRestClient _restClient = restClient;
         private readonly ILoggerContract _logger = logger;
 
         [HttpPost]
+        [Authorize(Roles = "Admin, Provider")]
         public async Task<IActionResult> CreateDriver([FromForm] CreateDriverWithImagesCommand data, [FromHeader(Name = "Authorization")] string token)
         {
             try
@@ -60,7 +66,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
                 }
 
                 var userExist = new RestRequest($"https://localhost:4051/user/{data.UserId}", Method.Get);
-                userExist.AddHeader("Authorization", $"Bearer {token}");
+                userExist.AddHeader("Authorization", token);
                 var response = await _restClient.ExecuteAsync(userExist);
                 if (!response.IsSuccessful)
                 {
@@ -126,6 +132,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin, Operator")]
         public async Task<IActionResult> GetAllDrivers([FromQuery] GetAllDriversQuery data)
         {
             try
@@ -145,6 +152,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin, Operator, Provider, Driver")]
         public async Task<IActionResult> GetDriverById(string id)
         {
             try
@@ -171,6 +179,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin, Operator, Provider, Driver")]
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateDriver([FromBody] UpdateDriverCommand data, string id)
         {
@@ -207,7 +216,45 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
             }
         }
 
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin, Operator, Provider, Driver")]
+        public async Task<IActionResult> UpdateDriverLocation([FromBody] UpdateDriverLocationCommand data, string id)
+        {
+            try
+            {
+                var command = new UpdateDriverLocationCommand(data.Latitude, data.Longitude);
+
+                var validate = _validatorUpdateLocation.Validate(command);
+                if (!validate.IsValid)
+                {
+                    var errors = validate.Errors.Select(e => e.ErrorMessage).ToList();
+                    _logger.Error($"Validation failed for UpdateDriverLocationCommand: {string.Join(", ", errors)}");
+                    return StatusCode(400, errors);
+                }
+
+                var handler = new UpdateDriverLocationCommandHandler(_driverRepo);
+                var result = await handler.Execute((id, data));
+                if (result.IsSuccessful)
+                {
+                    var user = result.Unwrap();
+                    _logger.Log("Driver updated: {DriverId}", id);
+                    return Ok(user);
+                }
+                else
+                {
+                    _logger.Error("Failed to update driver location: {ErrorMessage}", result.ErrorMessage);
+                    return StatusCode(409, result.ErrorMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Exception("An error occurred while updating the driver.", ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         [HttpPut("disconnect")]
+        //[Authorize(Roles = "Admin, Operator, Provider")] no se si ponerle control a esta ruta
         public async Task<IActionResult> ValidateUpdateTimeDriver()
         {
             try

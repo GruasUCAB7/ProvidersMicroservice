@@ -8,7 +8,6 @@ using ProvidersMS.src.Drivers.Application.Repositories;
 using ProvidersMS.src.Drivers.Domain;
 using ProvidersMS.src.Drivers.Domain.ValueObjects;
 using ProvidersMS.src.Drivers.Infrastructure.Models;
-using System.Configuration.Provider;
 
 namespace ProvidersMS.src.Drivers.Infrastructure.Repositories
 {
@@ -209,6 +208,17 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Repositories
             }
 
             return Result<Driver>.Success(driver);
+        }
+
+        public async Task UpdateDriverLocation(string driverId, double latitude, double longitude)
+        {
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", driverId);
+            var update = Builders<BsonDocument>.Update
+                .Set("driverLocation.latitude", latitude)
+                .Set("driverLocation.longitude", longitude)
+                .Set("updatedDate", DateTime.UtcNow);
+
+            await _driverCollection.UpdateOneAsync(filter, update);
         }
 
         public async Task ValidateUpdateTimeDriver()
