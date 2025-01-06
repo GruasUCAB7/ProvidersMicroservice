@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using ProvidersMS.Core.Application.IdGenerator;
@@ -32,6 +33,7 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Controllers
         private readonly ILoggerContract _logger = logger;
 
         [HttpPost]
+        [Authorize(Roles = "Admin, Provider")]
         public async Task<IActionResult> CreateCrane([FromBody] CreateCraneCommand data)
         {
             try
@@ -68,6 +70,7 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllCranes([FromQuery] GetAllCranesQuery data)
         {
             try
@@ -87,6 +90,7 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin, Operator, Provider")]
         public async Task<IActionResult> GetCraneById(string id)
         {
             try
@@ -108,6 +112,7 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Controllers
         }
 
         [HttpPatch("{id}")]
+        [Authorize(Roles = "Admin, Provider")]
         public async Task<IActionResult> UpdateCrane([FromBody] UpdateCraneCommand data, string id)
         {
             try

@@ -18,6 +18,7 @@ using ProvidersMS.src.Providers.Application.Queries.GetDriversAvailables;
 using ProvidersMS.src.Providers.Application.Queries.GetDriversAvailables.Types;
 using ProvidersMS.src.Providers.Application.Queries.Types;
 using ProvidersMS.src.Providers.Application.Repositories;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace ProvidersMS.src.Providers.Infrastructure.Controllers
@@ -44,6 +45,7 @@ namespace ProvidersMS.src.Providers.Infrastructure.Controllers
         private readonly ILoggerContract _logger = logger;
 
         [HttpPost]
+        [Authorize(Roles = "Admin, Provider")]
         public async Task<IActionResult> CreateProvider([FromBody] CreateProviderCommand data, [FromHeader(Name = "Authorization")] string token)
         {
             try
@@ -54,7 +56,7 @@ namespace ProvidersMS.src.Providers.Infrastructure.Controllers
                 }
 
                 var userExist = new RestRequest($"https://localhost:4051/user/{data.UserId}", Method.Get);
-                userExist.AddHeader("Authorization", $"Bearer {token}");
+                userExist.AddHeader("Authorization", token);
                 var response = await _restClient.ExecuteAsync(userExist);
                 if (!response.IsSuccessful)
                 {
@@ -93,6 +95,7 @@ namespace ProvidersMS.src.Providers.Infrastructure.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")] //dudoso operator
         public async Task<IActionResult> GetAllProviders([FromQuery] GetAllProvidersQuery data)
         {
             try
@@ -103,6 +106,7 @@ namespace ProvidersMS.src.Providers.Infrastructure.Controllers
 
                 _logger.Log("List of providers: {ProvidersIds}", string.Join(", ", result.Unwrap().Select(c => c.Id)));
                 return StatusCode(200, result.Unwrap());
+
             }
             catch (Exception ex)
             {
@@ -112,6 +116,7 @@ namespace ProvidersMS.src.Providers.Infrastructure.Controllers
         }
 
         [HttpGet("availables")]
+        [Authorize(Roles = "Admin, Operator")]
         public async Task<IActionResult> GetAvailableDrivers([FromQuery] GetAvailableDriversQuery data)
         {
             try
@@ -123,6 +128,11 @@ namespace ProvidersMS.src.Providers.Infrastructure.Controllers
                 _logger.Log("List of available drivers:", string.Join(", ", result.Unwrap().Select(c => c.CraneAssigned)));
                 return StatusCode(200, result.Unwrap());
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.Exception("Unauthorized access attempt: {Message}", ex.Message);
+                return StatusCode(403, "No tiene autorización para acceder a este recurso.");
+            }
             catch (Exception ex)
             {
                 _logger.Exception("Failed to get available drivers", ex.Message);
@@ -131,6 +141,7 @@ namespace ProvidersMS.src.Providers.Infrastructure.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin, Operator, Provider")] //dudoso provider, lo coloque para que se pueda consultar el mismo con sus datos propios
         public async Task<IActionResult> GetProviderById(string id)
         {
             try
@@ -152,6 +163,7 @@ namespace ProvidersMS.src.Providers.Infrastructure.Controllers
         }
 
         [HttpPatch("{id}")]
+        [Authorize(Roles = "Admin, Provider")]
         public async Task<IActionResult> UpdateProvider([FromBody] UpdateProviderCommand data, string id)
         {
             try

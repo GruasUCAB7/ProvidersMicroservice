@@ -9,7 +9,6 @@ using ProvidersMS.Core.Infrastructure.Data;
 using ProvidersMS.Core.Infrastructure.GoogleMaps;
 using ProvidersMS.Core.Infrastructure.Logger;
 using ProvidersMS.Core.Infrastructure.Storage;
-using ProvidersMS.Core.Infrastructure.Swagger;
 using ProvidersMS.Core.Infrastructure.UUID;
 using ProvidersMS.src.Cranes.Application.Commands.CreateCrane.Types;
 using ProvidersMS.src.Cranes.Application.Commands.UpdateCrane.Types;
@@ -17,6 +16,7 @@ using ProvidersMS.src.Cranes.Application.Repositories;
 using ProvidersMS.src.Cranes.Infrastructure.Repositories;
 using ProvidersMS.src.Cranes.Infrastructure.Validators;
 using ProvidersMS.src.Drivers.Application.Commands.UpdateDriver.Types;
+using ProvidersMS.src.Drivers.Application.Commands.UpdateDriverLocation.Types;
 using ProvidersMS.src.Drivers.Application.Repositories;
 using ProvidersMS.src.Drivers.Infrastructure.Dtos;
 using ProvidersMS.src.Drivers.Infrastructure.Repositories;
@@ -27,6 +27,9 @@ using ProvidersMS.src.Providers.Application.Repositories;
 using ProvidersMS.src.Providers.Infrastructure.Repositories;
 using ProvidersMS.src.Providers.Infrastructure.Validators;
 using RestSharp;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +46,7 @@ builder.Services.AddTransient<IValidator<CreateDriverWithImagesCommand>, CreateD
 builder.Services.AddTransient<IValidator<UpdateDriverCommand>, UpdateDriverValidator>();
 builder.Services.AddTransient<IValidator<CreateProviderCommand>, CreateProviderValidator>();
 builder.Services.AddTransient<IValidator<UpdateProviderCommand>, UpdateProviderValidator>();
+builder.Services.AddTransient<IValidator<UpdateDriverLocationCommand>, UpdateDriverLocationValidator>();
 builder.Services.AddScoped<ICraneRepository, MongoCraneRepository>();
 builder.Services.AddScoped<IDriverRepository, MongoDriverRepository>();
 builder.Services.AddScoped<IProviderRepository, MongoProviderRepository>();
@@ -53,15 +57,20 @@ builder.Services.AddScoped<IRestClient, RestClient>();
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "ProvidersMS API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "API ProviderssMicroservice",
+        Description = "Endpoints de ProvidersMicroservice",
+    });
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        In = ParameterLocation.Header,
-        Description = "Please enter into field the word 'Bearer' followed by a space and the JWT",
         Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Ingrese el token JWT en el formato: Bearer {token}"
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -79,6 +88,26 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER"),
+        ValidAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY")!))
+    };
+});
+
 
 builder.Services.AddCors(options =>
 {
@@ -118,6 +147,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseCors("AllowApiGateway");
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
