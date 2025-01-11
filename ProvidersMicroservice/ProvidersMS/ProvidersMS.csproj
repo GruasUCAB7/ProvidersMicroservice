@@ -8,13 +8,9 @@
 
   <ItemGroup>
     <Compile Remove="src\Cranes\Domain\Entities\**" />
-    <Compile Remove="Tests\**" />
     <Content Remove="src\Cranes\Domain\Entities\**" />
-    <Content Remove="Tests\**" />
     <EmbeddedResource Remove="src\Cranes\Domain\Entities\**" />
-    <EmbeddedResource Remove="Tests\**" />
     <None Remove="src\Cranes\Domain\Entities\**" />
-    <None Remove="Tests\**" />
   </ItemGroup>
 
 	<ItemGroup>

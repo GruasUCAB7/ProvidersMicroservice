@@ -99,10 +99,17 @@ namespace ProvidersMS.src.Cranes.Infrastructure.Controllers
                 var handler = new GetCraneByIdQueryHandler(_craneRepo);
                 var result = await handler.Execute(query);
 
-                var crane = result.Unwrap();
-
-                _logger.Log("Crane found: {CraneId}", id);
-                return StatusCode(200, crane);
+                if (result.IsSuccessful)
+                {
+                    var crane = result.Unwrap();
+                    _logger.Log("Crane found: {CraneId}", id);
+                    return Ok(crane);
+                }
+                else
+                {
+                    _logger.Error("Failed to get crane: {ErrorMessage}", result.ErrorMessage);
+                    return StatusCode(409, result.ErrorMessage);
+                }
             }
             catch (Exception ex)
             {
