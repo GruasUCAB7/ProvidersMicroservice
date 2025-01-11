@@ -71,7 +71,7 @@ namespace ProvidersMS.src.Providers.Domain
 
         public override void ValidateState()
         {
-            if (_id == null || _rif == null || _type ==null)
+            if (_id == null || _rif == null || _type == null)
             {
                 throw new InvalidProviderException();
             }

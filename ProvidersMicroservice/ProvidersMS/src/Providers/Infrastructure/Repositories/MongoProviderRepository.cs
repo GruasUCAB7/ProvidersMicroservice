@@ -96,8 +96,8 @@ namespace ProvidersMS.src.Providers.Infrastructure.Repositories
                 Id = provider.GetId(),
                 Rif = provider.GetRif(),
                 ProviderType = provider.GetProviderType(),
-                FleetOfCranes = provider.GetFleetOfCranes(),
-                Drivers = provider.GetDrivers(),
+                FleetOfCranes = new List<string>(),
+                Drivers = new List<string>(),
                 IsActive = provider.GetIsActive(),
                 CreatedDate = DateTime.UtcNow,
                 UpdatedDate = DateTime.UtcNow
@@ -108,8 +108,8 @@ namespace ProvidersMS.src.Providers.Infrastructure.Repositories
                 {"_id", mongoProvider.Id},
                 {"rif", mongoProvider.Rif},
                 {"providerType", mongoProvider.ProviderType},
-                {"fleetOfCranes", new BsonArray(mongoProvider.FleetOfCranes)},
-                {"drivers", new BsonArray(mongoProvider.Drivers)},
+                {"fleetOfCranes", new BsonArray()},
+                {"drivers", new BsonArray()},
                 {"isActive", mongoProvider.IsActive},
                 {"createdDate", mongoProvider.CreatedDate},
                 {"updatedDate", mongoProvider.UpdatedDate}
@@ -121,8 +121,8 @@ namespace ProvidersMS.src.Providers.Infrastructure.Repositories
                 new ProviderId(mongoProvider.Id),
                 new ProviderRif(mongoProvider.Rif),
                 new ProviderType(mongoProvider.ProviderType),
-                mongoProvider.FleetOfCranes.Select(c => new CraneId(c)).ToList(),
-                mongoProvider.Drivers.Select(d => new DriverId(d)).ToList()
+                new List<CraneId>(),
+                new List<DriverId>()
             );
             return Result<Provider>.Success(savedProvider);
         }
