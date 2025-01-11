@@ -1,10 +1,6 @@
 ﻿namespace ProvidersMS.src.Cranes.Application.Exceptions
 {
-    public class CraneAlreadyExistException : ApplicationException
+    public class CraneAlreadyExistException(string plate) : ApplicationException($"Crane with plate {plate} already exist")
     {
-        public CraneAlreadyExistException(string plate) 
-            : base($"Crane with plate {plate} already exist") 
-        { 
-        }
     }
 }

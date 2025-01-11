@@ -233,7 +233,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Repositories
                 if (timeDifference.TotalMinutes > 10)
                 {
                     var filter = Builders<BsonDocument>.Filter.Eq("_id", driverDocument.GetValue("_id").AsString);
-                    var update = Builders<BsonDocument>.Update.Set("isAvailable", false);
+                    var update = Builders<BsonDocument>.Update.Set("isActive", false);
                     await _driverCollection.UpdateOneAsync(filter, update);
                 }
             }
