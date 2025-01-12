@@ -6,7 +6,7 @@ using ProvidersMS.Core.Utils.Result;
 
 namespace ProvidersMS.Core.Infrastructure.Storage
 {
-    public class CloudinaryImageStorage(Cloudinary cloudinary) : ImageStorage
+    public class CloudinaryImageStorage(Cloudinary cloudinary) : IImageStorage
     {
         private readonly Cloudinary _cloudinary = cloudinary;
 

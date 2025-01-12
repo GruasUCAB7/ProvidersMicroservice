@@ -39,7 +39,7 @@ builder.Services.AddControllers();
 builder.Services.AddLogging();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSingleton<MongoDbService>();
-builder.Services.AddSingleton<ImageStorage, CloudinaryImageStorage>();
+builder.Services.AddSingleton<IImageStorage, CloudinaryImageStorage>();
 builder.Services.AddTransient<IValidator<CreateCraneCommand>, CreateCraneValidator>();
 builder.Services.AddTransient<IValidator<UpdateCraneCommand>, UpdateCraneValidator>();
 builder.Services.AddTransient<IValidator<CreateDriverWithImagesCommand>, CreateDriverValidator>();

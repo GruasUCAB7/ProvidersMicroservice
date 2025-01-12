@@ -31,6 +31,12 @@ namespace ProvidersMS.src.Drivers.Domain
         public bool SetIsAvailable(bool isAvailable) => _isAvailable = isAvailable;
         public bool SetIsActive(bool isActive) => _isActive = isActive;
         public void SetImagesDocuments(List<string> imagesDocuments) => _imagesDocuments = imagesDocuments;
+        public void SetDriverLocation(double latitude, double longitude)
+        {
+            var newLocation = new DriverLocation(latitude, longitude);
+            _location = newLocation;
+        }
+
 
         public static Driver CreateDriver(DriverId id, DriverDNI dni, DriverIsActiveLicensed isActiveLicensed, List<string> imagesDocuments, CraneId craneAssigned, DriverLocation driverLocation)
         {

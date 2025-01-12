@@ -42,11 +42,13 @@ namespace ProvidersMS.src.Drivers.Application.Commands.UpdateDriver
 
             if (!string.IsNullOrEmpty(request.data.DriverLocation))
             {
-                var location = await _googleApiService.GetCoordinatesFromAddress(request.data.DriverLocation);
-                if (location == null)
+                var locationResult = await _googleApiService.GetCoordinatesFromAddress(request.data.DriverLocation);
+                if (locationResult.IsFailure)
                 {
                     return Result<GetDriverResponse>.Failure(new CoordinatesNotFoundException("Driver location not found."));
                 }
+                var location = locationResult.Unwrap();
+                driver.SetDriverLocation(location.Latitude, location.Longitude);
             }
 
             if (request.data.IsActive.HasValue)
