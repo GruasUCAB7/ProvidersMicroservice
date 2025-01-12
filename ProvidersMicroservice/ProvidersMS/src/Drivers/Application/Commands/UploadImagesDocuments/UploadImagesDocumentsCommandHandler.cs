@@ -1,5 +1,4 @@
-﻿using ProvidersMS.Core.Application.IdGenerator;
-using ProvidersMS.Core.Application.Services;
+﻿using ProvidersMS.Core.Application.Services;
 using ProvidersMS.Core.Application.Storage.Images;
 using ProvidersMS.Core.Utils.Result;
 using ProvidersMS.src.Images.Application.Exceptions;
@@ -7,12 +6,10 @@ using ProvidersMS.src.Drivers.Application.Commands.UploadImagesDocuments.Types;
 namespace ProvidersMS.src.Drivers.Application.Commands.UploadImagesDocuments
 {
     public class UploadImagesDocumentsCommandHandler(
-        IdGenerator<string> idGenerator,
-        ImageStorage imageStorage
+        IImageStorage imageStorage
     ) : IService<UploadImageCommand, UploadImageResponse>
     {
-        private readonly IdGenerator<string> _idGenerator = idGenerator;
-        private readonly ImageStorage _imageStorage = imageStorage;
+        private readonly IImageStorage _imageStorage = imageStorage;
 
         public async Task<Result<UploadImageResponse>> Execute(UploadImageCommand data)
         {

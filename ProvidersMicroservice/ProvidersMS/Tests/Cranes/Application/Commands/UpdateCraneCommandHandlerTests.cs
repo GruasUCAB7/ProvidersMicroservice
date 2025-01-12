@@ -1,9 +1,11 @@
 ﻿using Moq;
+using ProvidersMS.Core.Utils.Optional;
 using ProvidersMS.Core.Utils.Result;
 using ProvidersMS.src.Cranes.Application.Commands.UpdateCrane;
 using ProvidersMS.src.Cranes.Application.Commands.UpdateCrane.Types;
 using ProvidersMS.src.Cranes.Application.Exceptions;
 using ProvidersMS.src.Cranes.Application.Repositories;
+using ProvidersMS.src.Cranes.Domain;
 using ProvidersMS.src.Cranes.Domain.ValueObjects;
 using Xunit;
 
@@ -25,7 +27,7 @@ namespace ProvidersMS.Tests.Cranes.Application.Commands
             var command = new UpdateCraneCommand(true);
             var handler = new UpdateCraneCommandHandler(_craneRepositoryMock.Object);
 
-            var crane = src.Cranes.Domain.Crane.CreateCrane(
+            var crane = Crane.CreateCrane(
                 new CraneId(craneId),
                 new CraneBrand("Ford"),
                 new CraneModel("Tritón"),
@@ -34,8 +36,8 @@ namespace ProvidersMS.Tests.Cranes.Application.Commands
                 new CraneYear(2012)
             );
 
-            _craneRepositoryMock.Setup(x => x.GetById(craneId)).ReturnsAsync(Core.Utils.Optional.Optional<src.Cranes.Domain.Crane>.Of(crane));
-            _craneRepositoryMock.Setup(x => x.Update(It.IsAny<src.Cranes.Domain.Crane>())).ReturnsAsync(Result<src.Cranes.Domain.Crane>.Success(crane));
+            _craneRepositoryMock.Setup(x => x.GetById(craneId)).ReturnsAsync(Optional<Crane>.Of(crane));
+            _craneRepositoryMock.Setup(x => x.Update(crane)).ReturnsAsync(Result<Crane>.Success(crane));
 
             var result = await handler.Execute((craneId, command));
             Assert.NotNull(result);
@@ -56,7 +58,7 @@ namespace ProvidersMS.Tests.Cranes.Application.Commands
             var command = new UpdateCraneCommand(true);
             var handler = new UpdateCraneCommandHandler(_craneRepositoryMock.Object);
 
-            _craneRepositoryMock.Setup(x => x.GetById(craneId)).ReturnsAsync(Core.Utils.Optional.Optional<src.Cranes.Domain.Crane>.Empty());
+            _craneRepositoryMock.Setup(x => x.GetById(craneId)).ReturnsAsync(Optional<Crane>.Empty());
 
             var result = await handler.Execute((craneId, command));
 
@@ -72,7 +74,7 @@ namespace ProvidersMS.Tests.Cranes.Application.Commands
             var command = new UpdateCraneCommand(true);
             var handler = new UpdateCraneCommandHandler(_craneRepositoryMock.Object);
 
-            var crane = src.Cranes.Domain.Crane.CreateCrane(
+            var crane = Crane.CreateCrane(
                 new CraneId(craneId),
                 new CraneBrand("Ford"),
                 new CraneModel("Tritón"),
@@ -81,8 +83,8 @@ namespace ProvidersMS.Tests.Cranes.Application.Commands
                 new CraneYear(2012)
             );
 
-            _craneRepositoryMock.Setup(x => x.GetById(craneId)).ReturnsAsync(Core.Utils.Optional.Optional<src.Cranes.Domain.Crane>.Of(crane));
-            _craneRepositoryMock.Setup(x => x.Update(It.IsAny<src.Cranes.Domain.Crane>())).ReturnsAsync(Result<src.Cranes.Domain.Crane>.Failure(new CraneUpdateFailedException()));
+            _craneRepositoryMock.Setup(x => x.GetById(craneId)).ReturnsAsync(Optional<Crane>.Of(crane));
+            _craneRepositoryMock.Setup(x => x.Update(crane)).ReturnsAsync(Result<Crane>.Failure(new CraneUpdateFailedException()));
 
             var result = await handler.Execute((craneId, command));
 

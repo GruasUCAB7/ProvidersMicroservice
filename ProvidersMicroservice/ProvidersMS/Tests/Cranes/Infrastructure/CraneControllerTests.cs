@@ -173,7 +173,7 @@ namespace ProvidersMS.Tests.Cranes.Infrastructure
         }
 
         [Fact]
-        public async Task UpdateCrane_ShouldReturn404_WhenCraneNotFound()
+        public async Task UpdateCrane_ShouldReturn409_WhenCraneNotFound()
         {
             var command = new UpdateCraneCommand(true);
             _validatorUpdateMock.Setup(x => x.Validate(command)).Returns(new ValidationResult());

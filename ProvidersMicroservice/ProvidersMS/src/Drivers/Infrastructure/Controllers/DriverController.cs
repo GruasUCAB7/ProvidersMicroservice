@@ -26,6 +26,7 @@ using RestSharp;
 using ProvidersMS.src.Drivers.Application.Commands.UpdateDriverLocation.Types;
 using ProvidersMS.src.Drivers.Application.Commands.UpdateDriverLocation;
 using Microsoft.AspNetCore.Authorization;
+using ProvidersMS.src.Drivers.Application.Exceptions;
 
 namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
 {
@@ -34,7 +35,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
     public class DriverController(
         IDriverRepository driverRepo,
         ICraneRepository craneRepo,
-        ImageStorage imageStorage,
+        IImageStorage imageStorage,
         IdGenerator<string> idGenerator,
         IValidator<CreateDriverWithImagesCommand> validatorCreate,
         IValidator<UpdateDriverCommand> validatorUpdate,
@@ -45,7 +46,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
     {
         private readonly IDriverRepository _driverRepo = driverRepo;
         private readonly ICraneRepository _craneRepo = craneRepo;
-        private readonly ImageStorage _imageStorage = imageStorage;
+        private readonly IImageStorage _imageStorage = imageStorage;
         private readonly IdGenerator<string> _idGenerator = idGenerator;
         private readonly IValidator<CreateDriverWithImagesCommand> _validatorCreate = validatorCreate;
         private readonly IValidator<UpdateDriverCommand> _validatorUpdate = validatorUpdate;
@@ -82,7 +83,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
                 }
 
                 var createDriverCommand = new CreateDriverCommand(data.UserId, data.DNI, data.IsActiveLicensed, data.CraneAssigned, data.DriverLocation);
-                var createDriverService = new CreateDriverCommandHandler(_driverRepo, _craneRepo, _idGenerator, _googleApiService);
+                var createDriverService = new CreateDriverCommandHandler(_driverRepo, _craneRepo, _googleApiService);
                 var createDriverResult = await createDriverService.Execute(createDriverCommand);
                 if (createDriverResult.IsFailure)
                 {
@@ -100,7 +101,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
                     data.RoadMedicalCertificateImage,
                     data.CivilLiabilityImage
                 );
-                var uploadImagesService = new UploadImagesDocumentsCommandHandler(_idGenerator, _imageStorage);
+                var uploadImagesService = new UploadImagesDocumentsCommandHandler(_imageStorage);
                 var uploadImageResult = await uploadImagesService.Execute(uploadImagesCommand);
                 if (uploadImageResult.IsFailure)
                 {
@@ -216,7 +217,7 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
             }
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}/updateLocation")]
         [Authorize(Roles = "Admin, Operator, Provider, Driver")]
         public async Task<IActionResult> UpdateDriverLocation([FromBody] UpdateDriverLocationCommand data, string id)
         {
@@ -254,7 +255,6 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
         }
 
         [HttpPut("disconnect")]
-        //[Authorize(Roles = "Admin, Operator, Provider")] no se si ponerle control a esta ruta
         public async Task<IActionResult> ValidateUpdateTimeDriver()
         {
             try
@@ -278,6 +278,5 @@ namespace ProvidersMS.src.Drivers.Infrastructure.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-
     }
 }
