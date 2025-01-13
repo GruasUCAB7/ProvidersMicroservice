@@ -29,7 +29,6 @@ namespace ProvidersMS.src.Providers.Infrastructure.Controllers
         IProviderRepository providerRepo,
         ICraneRepository craneRepo,
         IDriverRepository driverRepo,
-        IdGenerator<string> idGenerator,
         IValidator<CreateProviderCommand> validatorCreate,
         IValidator<UpdateProviderCommand> validatorUpdate,
         IRestClient restClient,
@@ -38,7 +37,6 @@ namespace ProvidersMS.src.Providers.Infrastructure.Controllers
         private readonly IProviderRepository _providerRepo = providerRepo;
         private readonly ICraneRepository _craneRepo = craneRepo;
         private readonly IDriverRepository _driverRepo = driverRepo;
-        private readonly IdGenerator<string> _idGenerator = idGenerator;
         private readonly IValidator<CreateProviderCommand> _validatorCreate = validatorCreate;
         private readonly IValidator<UpdateProviderCommand> _validatorUpdate = validatorUpdate;
         private readonly IRestClient _restClient = restClient;
@@ -73,7 +71,7 @@ namespace ProvidersMS.src.Providers.Infrastructure.Controllers
                     return StatusCode(400, errors);
                 }
 
-                var handler = new CreateProviderCommandHandler(_providerRepo, _craneRepo, _driverRepo, _idGenerator);
+                var handler = new CreateProviderCommandHandler(_providerRepo, _craneRepo, _driverRepo);
                 var result = await handler.Execute(command);
 
                 if (result.IsSuccessful)
@@ -95,7 +93,7 @@ namespace ProvidersMS.src.Providers.Infrastructure.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")] //dudoso operator
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllProviders([FromQuery] GetAllProvidersQuery data)
         {
             try
@@ -128,11 +126,6 @@ namespace ProvidersMS.src.Providers.Infrastructure.Controllers
                 _logger.Log("List of available drivers:", string.Join(", ", result.Unwrap().Select(c => c.CraneAssigned)));
                 return StatusCode(200, result.Unwrap());
             }
-            catch (UnauthorizedAccessException ex)
-            {
-                _logger.Exception("Unauthorized access attempt: {Message}", ex.Message);
-                return StatusCode(403, "No tiene autorización para acceder a este recurso.");
-            }
             catch (Exception ex)
             {
                 _logger.Exception("Failed to get available drivers", ex.Message);
@@ -141,7 +134,7 @@ namespace ProvidersMS.src.Providers.Infrastructure.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin, Operator, Provider")] //dudoso provider, lo coloque para que se pueda consultar el mismo con sus datos propios
+        [Authorize(Roles = "Admin, Operator, Provider")]
         public async Task<IActionResult> GetProviderById(string id)
         {
             try

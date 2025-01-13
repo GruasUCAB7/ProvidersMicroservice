@@ -16,14 +16,12 @@ namespace ProvidersMS.src.Providers.Application.Commands.CreateProvider
     public class CreateProviderCommandHandler(
         IProviderRepository providerRepository,
         ICraneRepository craneRepository,
-        IDriverRepository driverRepository,
-        IdGenerator<string> idGenerator
+        IDriverRepository driverRepository
     ) : IService<CreateProviderCommand, CreateProviderResponse>
     {
         private readonly IProviderRepository _providerRepository = providerRepository;
         private readonly ICraneRepository _craneRepository = craneRepository;
         private readonly IDriverRepository _driverRepository = driverRepository;
-        private readonly IdGenerator<string> _idGenerator = idGenerator;
 
         public async Task<Result<CreateProviderResponse>> Execute(CreateProviderCommand data)
         {

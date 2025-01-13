@@ -1,9 +1,6 @@
 ﻿namespace ProvidersMS.src.Providers.Application.Exceptions
 {
-    public class CraneAlreadyAssociatedException : ApplicationException
+    public class CraneAlreadyAssociatedException(string craneId) : ApplicationException($"Crane with id: {craneId} already associated with another Provider.")
     {
-        public CraneAlreadyAssociatedException(string craneId) : base($"Crane with id: {craneId} already associated with another Provider.")
-        {
-        }
     }
 }

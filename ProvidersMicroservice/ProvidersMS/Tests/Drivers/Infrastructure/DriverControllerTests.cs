@@ -9,7 +9,6 @@ using ProvidersMS.Core.Application.Storage.Images;
 using ProvidersMS.Core.Application.Storage.Images.Types;
 using ProvidersMS.Core.Utils.Optional;
 using ProvidersMS.Core.Utils.Result;
-using ProvidersMS.src.Cranes.Application.Commands.UpdateCrane.Types;
 using ProvidersMS.src.Cranes.Application.Repositories;
 using ProvidersMS.src.Cranes.Domain;
 using ProvidersMS.src.Cranes.Domain.ValueObjects;
@@ -248,7 +247,7 @@ namespace ProvidersMS.Tests.Drivers.Infrastructure
             var activeLicensed = new DriverIsActiveLicensed(true);
             var images = new List<string>();
             var craneAssigned = new CraneId("c697e2b8-87ef-4820-bcdb-9cdf39b9d344");
-            var location = new DriverLocation(10.0, 10.0);         
+            var location = new DriverLocation(10.0, 10.0);
             var existingDriver = Driver.CreateDriver(driverId, DNI, activeLicensed, images, craneAssigned, location);
 
             var query = new GetDriverByIdQuery(driverId.GetValue());
