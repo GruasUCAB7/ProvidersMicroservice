@@ -122,7 +122,7 @@ namespace ProvidersMS.Tests.Drivers.Infrastructure
         }
 
         [Fact]
-        public async Task CreateCrane_ShouldReturn400_WhenValidationFails()
+        public async Task CreateDriver_ShouldReturn400_WhenValidationFails()
         {
             var command = new CreateDriverWithImagesCommand(
                 "53c0d8fa-dbca-4d98-9fdf-1d1413e90f0e",
